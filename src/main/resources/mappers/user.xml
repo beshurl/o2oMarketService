@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.UserDao">
+
+	<resultMap id="userResultMap"
+		type="com.ssafy.o2omystore.dto.User">
+		<id property="userId" column="user_id" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="address" column="address" />
+		<result property="phone" column="phone" />
+		<result property="gender" column="gender" />
+		<result property="age" column="age" />
+		<result property="point" column="point" />
+	</resultMap>
+
+	<select id="selectUserById"
+		parameterType="string"
+		resultMap="userResultMap">
+		SELECT
+		user_id,
+		password,
+		name,
+		address,
+		phone,
+		gender,
+		age,
+		point
+		FROM user
+		WHERE user_id = #{value}
+	</select>
+
+	<insert id="insertUser"
+		parameterType="com.ssafy.o2omystore.dto.User">
+		INSERT INTO user (
+		user_id,
+		password,
+		name,
+		address,
+		phone,
+		gender,
+		age
+		) VALUES (
+		#{userId},
+		#{password},
+		#{name},
+		#{address},
+		#{phone},
+		#{gender},
+		#{age}
+		)
+	</insert>
+	
+	<select id="selectUserForLogin"
+		parameterType="string"
+		resultMap="userResultMap">
+		SELECT
+		user_id,
+		password,
+		name,
+		address,
+		phone,
+		gender,
+		age,
+		point
+		FROM user
+		WHERE user_id = #{value}
+	</select>
+
+
+</mapper>

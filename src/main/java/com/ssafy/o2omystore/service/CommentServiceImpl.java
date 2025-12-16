@@ -10,29 +10,37 @@ import com.ssafy.o2omystore.dto.Comment;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentDao commentDao;
+	private final CommentDao commentDao;
 
-    public CommentServiceImpl(CommentDao commentDao) {
-        this.commentDao = commentDao;
-    }
+	public CommentServiceImpl(CommentDao commentDao) {
+		this.commentDao = commentDao;
+	}
 
-    @Override
-    public List<Comment> getCommentsByProductId(int productId) {
-        return commentDao.selectCommentsByProductId(productId);
-    }
+	@Override
+	public List<Comment> getCommentsByProductId(int productId) {
+		return commentDao.selectCommentsByProductId(productId);
+	}
 
-    @Override
-    public void createComment(Comment comment) {
-        commentDao.insertComment(comment);
-    }
+	@Override
+	public void createComment(Comment comment) {
 
-    @Override
-    public void modifyComment(Comment comment) {
-        commentDao.updateComment(comment);
-    }
+		Comment existing = commentDao.selectCommentByUserAndProduct(comment.getUserId(), comment.getProductId());
 
-    @Override
-    public void removeComment(int commentId) {
-        commentDao.deleteComment(commentId);
-    }
+		if (existing == null) {
+			commentDao.insertComment(comment);
+		} else {
+			comment.setCommentId(existing.getCommentId());
+			commentDao.updateComment(comment);
+		}
+	}
+
+	@Override
+	public void modifyComment(Comment comment) {
+		commentDao.updateComment(comment);
+	}
+
+	@Override
+	public void removeComment(int commentId) {
+		commentDao.deleteComment(commentId);
+	}
 }

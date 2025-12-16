@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.CommentDao">
+
+    <resultMap id="commentResultMap"
+               type="com.ssafy.o2omystore.dto.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="content" column="content"/>
+        <result property="rating" column="rating"/>
+    </resultMap>
+
+    <select id="selectCommentsByProductId"
+            parameterType="int"
+            resultMap="commentResultMap">
+        SELECT
+            comment_id,
+            user_id,
+            product_id,
+            content,
+            rating
+        FROM comment
+        WHERE product_id = #{value}
+        ORDER BY comment_id DESC
+    </select>
+
+    <insert id="insertComment"
+            parameterType="com.ssafy.o2omystore.dto.Comment">
+        INSERT INTO comment (
+            user_id,
+            product_id,
+            content,
+            rating
+        ) VALUES (
+            #{userId},
+            #{productId},
+            #{content},
+            #{rating}
+        )
+    </insert>
+
+    <update id="updateComment"
+            parameterType="com.ssafy.o2omystore.dto.Comment">
+        UPDATE comment
+        SET
+            content = #{content},
+            rating = #{rating}
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <delete id="deleteComment"
+            parameterType="int">
+        DELETE FROM comment
+        WHERE comment_id = #{value}
+    </delete>
+
+</mapper>

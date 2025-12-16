@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.ProductDao">
+
+	<resultMap id="productResultMap" type="com.ssafy.o2omystore.dto.Product">
+		<id property="productId" column="product_id" />
+		<result property="name" column="name" />
+		<result property="price" column="price" />
+		<result property="finalPrice" column="final_price" />
+		<result property="image" column="image" />
+		<result property="category" column="category_name" />
+		<result property="discountRate" column="rate" />
+		<result property="discountType" column="type" />
+	</resultMap>
+
+	<select id="selectAllProducts" resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		CASE
+		WHEN d.discount_id IS NOT NULL
+		THEN p.price * (100 - d.rate) / 100
+		ELSE p.price
+		END AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		LEFT JOIN discount d
+		ON p.product_id = d.product_id
+		AND d.is_active = 1
+		AND NOW() BETWEEN d.start_date AND d.end_date
+		ORDER BY p.product_id
+	</select>
+
+	<select id="selectDiscountProducts" resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		p.price * (100 - d.rate) / 100 AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		JOIN discount d ON p.product_id = d.product_id
+		WHERE d.is_active = 1
+		AND d.type = 'DISCOUNT'
+		AND NOW() BETWEEN d.start_date AND d.end_date
+	</select>
+
+	<select id="selectDiscountProductsByCategory" resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		p.price * (100 - d.rate) / 100 AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		JOIN discount d ON p.product_id = d.product_id
+		WHERE d.is_active = 1
+		AND d.type = 'DISCOUNT'
+		AND c.category_name = #{category}
+		AND NOW() BETWEEN d.start_date AND d.end_date
+	</select>
+
+	<select id="selectDeadlineProducts" resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		p.price * (100 - d.rate) / 100 AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		JOIN discount d ON p.product_id = d.product_id
+		WHERE d.is_active = 1
+		AND d.type = 'DEADLINE'
+		AND NOW() BETWEEN d.start_date AND d.end_date
+	</select>
+
+	<select id="selectDeadlineProductsByCategory" resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		p.price * (100 - d.rate) / 100 AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		JOIN discount d ON p.product_id = d.product_id
+		WHERE d.is_active = 1
+		AND d.type = 'DEADLINE'
+		AND c.category_name = #{category}
+		AND NOW() BETWEEN d.start_date AND d.end_date
+	</select>
+
+	<select id="selectProductById"
+		parameterType="int"
+		resultMap="productResultMap">
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		CASE
+		WHEN d.discount_id IS NOT NULL
+		THEN p.price * (100 - d.rate) / 100
+		ELSE p.price
+		END AS final_price,
+		p.image,
+		c.category_name,
+		d.rate,
+		d.type
+		FROM product p
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c ON pc.category_id = c.category_id
+		LEFT JOIN discount d
+		ON p.product_id = d.product_id
+		AND d.is_active = 1
+		AND NOW() BETWEEN d.start_date AND d.end_date
+		WHERE p.product_id = #{value}
+	</select>
+
+</mapper>

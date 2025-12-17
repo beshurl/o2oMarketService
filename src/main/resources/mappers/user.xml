@@ -67,6 +67,13 @@
 		FROM user
 		WHERE user_id = #{value}
 	</select>
+	
+	<select id ="isUsed">
+	select exists (
+		select 1 from user 
+		where user_id = #{userId}
+	)
+	</select>
 
 
 </mapper>

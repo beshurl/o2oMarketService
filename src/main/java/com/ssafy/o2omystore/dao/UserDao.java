@@ -12,4 +12,6 @@ public interface UserDao {
     int insertUser(User user);
 
     User selectUserForLogin(String userId);
+    
+    int isUsed(String userId);
 }

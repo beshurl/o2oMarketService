@@ -6,4 +6,6 @@ public interface UserService {
 
     void registerUser(User user);
     User login(String userId, String password);
+    
+    boolean isUsed(String userId);
 }

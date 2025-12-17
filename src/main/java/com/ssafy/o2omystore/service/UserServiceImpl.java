@@ -38,4 +38,12 @@ public class UserServiceImpl implements UserService {
         user.setPassword(null);
         return user;
     }
+
+	@Override
+	public boolean isUsed(String userId) {
+		
+		boolean exists = userDao.isUsed(userId) == 1;
+		
+		return !exists;
+	}
 }

@@ -154,5 +154,10 @@
 	where product_id = #{productId} and
 	count >= ${quantity}
 	</update>
+	
+	<select id="selectPriceByProductId">
+	select price from product
+	where product_id = #{productId}
+	</select>
 
 </mapper>

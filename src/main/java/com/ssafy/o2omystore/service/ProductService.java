@@ -17,6 +17,8 @@ public interface ProductService {
     int getStockByProductId(int productId);
     
     int decreaseStock(int productId, int quantity);
+    
+    int getPriceByProductId(int productId);
 
     Product getProductById(int productId);
 

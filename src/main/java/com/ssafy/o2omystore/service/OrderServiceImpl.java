@@ -26,6 +26,12 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	public void createOrder(Order order) {
 		
+		// 상품을 추가하지 않고 주문한 경우
+		if (order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {
+			
+			throw new IllegalArgumentException("주문 상품이 없습니다.");
+		}
+		
 		// 주문한 개수 만큼 현재 재고 차감
 		for (OrderDetail od : order.getOrderDetails()) {
 						
@@ -42,7 +48,10 @@ public class OrderServiceImpl implements OrderService {
 		// totalPrice 구하기
 		for (OrderDetail od : order.getOrderDetails()) {
 			
-			totalPrice += (od.getQuantity() * od.getPrice());
+			int price = productService.getPriceByProductId(od.getProductId());
+			
+			od.setPrice(price);
+			totalPrice += (od.getQuantity() * price);
 			
 		}
 		

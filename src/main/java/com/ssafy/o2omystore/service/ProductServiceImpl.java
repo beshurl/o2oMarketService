@@ -77,4 +77,9 @@ public class ProductServiceImpl implements ProductService {
 	public int decreaseStock(int productId, int quantity) {
 		return productDao.decreaseStock(productId, quantity);
 	}
+
+	@Override
+	public int getPriceByProductId(int productId) {
+		return productDao.selectPriceByProductId(productId);
+	}
 }

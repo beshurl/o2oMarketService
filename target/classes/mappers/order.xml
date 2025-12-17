@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.OrderDao">
+
+    <resultMap id="orderMap"
+    type="com.ssafy.o2omystore.dto.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="totalPrice" column="total_price"/>
+    </resultMap>
+
+    <insert id="insertOrder"
+		parameterType="com.ssafy.o2omystore.dto.Order"
+		useGeneratedKeys="true"
+        keyProperty="orderId">
+		INSERT INTO orders (
+		user_id,
+		order_time,
+		status,
+		total_price
+		) VALUES (
+		#{userId},
+		NOW(),
+		#{status},
+		#{totalPrice}
+		)
+	</insert>
+	
+	<insert id="insertOrderDetail"
+		parameterType="list">
+		INSERT INTO order_detail (
+		order_id,
+        product_id,
+        quantity,
+        price,
+        discount_applied
+		) VALUES  
+		<foreach collection="orderDetails"
+             item="detail"
+             separator=",">
+        (
+            #{detail.orderId},
+            #{detail.productId},
+            #{detail.quantity},
+            #{detail.price},
+            #{detail.discountApplied}
+        )
+    </foreach>
+	</insert>
+	
+	<select id="selectAllOrder" resultMap="orderMap">
+	select * from orders;
+	</select>
+	
+	<resultMap id="orderDetailMap"
+    type="com.ssafy.o2omystore.dto.OrderDetail">
+        <id property="orderItemId" column="order_item_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="discountApplied" column="discount_applied"/>
+    </resultMap>
+	
+	<select id="selectOrderDetailByOrderId"
+			resultMap="orderDetailMap"
+			parameterType="Integer">
+	select * from order_detail where order_id = #{orderId}
+	</select>
+
+</mapper>

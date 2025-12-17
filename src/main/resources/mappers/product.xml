@@ -10,6 +10,7 @@
 		<result property="finalPrice" column="final_price" />
 		<result property="image" column="image" />
 		<result property="category" column="category_name" />
+		<result property="stock" column="count"/>
 		<result property="discountRate" column="rate" />
 		<result property="discountType" column="type" />
 	</resultMap>
@@ -26,6 +27,7 @@
 		END AS final_price,
 		p.image,
 		c.category_name,
+		p.count,
 		d.rate,
 		d.type
 		FROM product p
@@ -141,5 +143,16 @@
 		AND NOW() BETWEEN d.start_date AND d.end_date
 		WHERE p.product_id = #{value}
 	</select>
+	
+	<select id="selectStockByProductId">
+	select count from product where product_id = #{productId}
+	</select>
+	
+	<update id="decreaseStock">
+	update product 
+	set count = count - #{quantity}
+	where product_id = #{productId} and
+	count >= ${quantity}
+	</update>
 
 </mapper>

@@ -10,6 +10,10 @@ import com.ssafy.o2omystore.dto.ProductLocation;
 import com.ssafy.o2omystore.service.ProductLocationService;
 import com.ssafy.o2omystore.service.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Product API", description = "상품 목록 조회, 특정 상품 상세 내역 조회 등 상품 관련 API")
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -21,6 +25,7 @@ public class ProductController {
 		this.productLocationService = productLocationService;
 	}
 
+	@Operation(summary = "전체 상품의 목록을 조회한다.")
 	@GetMapping
 	public List<Product> getAllProducts() {
 		return productService.getAllProducts();
@@ -43,6 +48,7 @@ public class ProductController {
 		return productService.getDeadlineProductsByCategory(category);
 	}
 
+	@Operation(summary = "{productId}에 해당하는 상품의 위치, 리뷰 등 상품 상세 내역을 반환한다.")
 	@GetMapping("/{productId}")
 	public ProductDetail getProductDetail(@PathVariable int productId) {
 	    return productService.getProductDetail(productId);

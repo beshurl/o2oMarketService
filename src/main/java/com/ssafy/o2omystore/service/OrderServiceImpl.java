@@ -2,7 +2,10 @@ package com.ssafy.o2omystore.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.o2omystore.dao.OrderDao;
 import com.ssafy.o2omystore.dto.Order;
@@ -11,29 +14,45 @@ import com.ssafy.o2omystore.dto.OrderDetail;
 @Service
 public class OrderServiceImpl implements OrderService {
 	
+	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	private final OrderDao orderDao;
+	private final ProductService productService;
 	
-	public OrderServiceImpl(OrderDao orderDao) {
+	public OrderServiceImpl(OrderDao orderDao, ProductService productService) {
 		this.orderDao = orderDao;
+		this.productService = productService;
 	}
 
+	@Transactional
 	public void createOrder(Order order) {
+		
+		// 주문한 개수 만큼 현재 재고 차감
+		for (OrderDetail od : order.getOrderDetails()) {
+						
+			int update = productService.decreaseStock(od.getProductId(), od.getQuantity());
+			
+			if (update == 0) {
+				throw new IllegalStateException("재고가 부족합니다.");
+			}
+			
+		}
 		
 		int totalPrice = 0;
 		
+		// totalPrice 구하기
 		for (OrderDetail od : order.getOrderDetails()) {
 			
-			// totalPrice 구하기
 			totalPrice += (od.getQuantity() * od.getPrice());
 			
 		}
 		
 		order.setTotalPrice(totalPrice);
+		order.setStatus("주문 완료");
 		orderDao.insertOrder(order);
 		
+		// orderDetail에 orderId 넣기
 		for (OrderDetail od : order.getOrderDetails()) {
 			
-			// orderDetail에 orderId 넣기
 			od.setOrderId(order.getOrderId());
 			
 		}
@@ -52,9 +71,5 @@ public class OrderServiceImpl implements OrderService {
 		
 		return orderDao.selectOrderDetailByOrderId(orderId);
 	}
-	
-
-	
-	
 
 }

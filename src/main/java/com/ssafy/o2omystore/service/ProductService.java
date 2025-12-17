@@ -13,6 +13,10 @@ public interface ProductService {
 
     List<Product> getDeadlineProducts();
     List<Product> getDeadlineProductsByCategory(String category);
+    
+    int getStockByProductId(int productId);
+    
+    int decreaseStock(int productId, int quantity);
 
     Product getProductById(int productId);
 

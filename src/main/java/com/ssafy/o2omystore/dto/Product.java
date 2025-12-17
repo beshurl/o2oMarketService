@@ -8,6 +8,7 @@ public class Product {
     private Integer finalPrice;
     private String image;
     private String category;
+    private int stock;
 
     private Integer discountRate;
     private String discountType;
@@ -22,6 +23,7 @@ public class Product {
             Integer finalPrice,
             String image,
             String category,
+            int stock,
             Integer discountRate,
             String discountType
     ) {
@@ -31,6 +33,7 @@ public class Product {
         this.finalPrice = finalPrice;
         this.image = image;
         this.category = category;
+        this.stock = stock;
         this.discountRate = discountRate;
         this.discountType = discountType;
     }
@@ -83,7 +86,15 @@ public class Product {
         this.category = category;
     }
 
-    public Integer getDiscountRate() {
+    public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public Integer getDiscountRate() {
         return discountRate;
     }
 
@@ -99,15 +110,11 @@ public class Product {
         this.discountType = discountType;
     }
 
-    @Override
-    public String toString() {
-        return "Product [productId=" + productId
-                + ", name=" + name
-                + ", price=" + price
-                + ", finalPrice=" + finalPrice
-                + ", image=" + image
-                + ", category=" + category
-                + ", discountRate=" + discountRate
-                + ", discountType=" + discountType + "]";
-    }
+	@Override
+	public String toString() {
+		return "Product [productId=" + productId + ", name=" + name + ", price=" + price + ", finalPrice=" + finalPrice
+				+ ", image=" + image + ", category=" + category + ", stock=" + stock + ", discountRate=" + discountRate
+				+ ", discountType=" + discountType + "]";
+	}
+
 }

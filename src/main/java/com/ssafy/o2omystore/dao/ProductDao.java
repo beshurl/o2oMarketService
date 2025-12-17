@@ -12,6 +12,8 @@ public interface ProductDao {
     
     List<Product> selectDeadlineProducts();
     List<Product> selectDeadlineProductsByCategory(String category);
+    int selectStockByProductId(int productId);
+    int decreaseStock(int productId, int quantity);
     Product selectProductById(int productId);
 
 }

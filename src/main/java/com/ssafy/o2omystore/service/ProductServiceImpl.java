@@ -65,4 +65,16 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getDeadlineProductsByCategory(String category) {
 		return productDao.selectDeadlineProductsByCategory(category);
 	}
+
+	@Override
+	public int getStockByProductId(int productId) {
+		
+		return productDao.selectStockByProductId(productId);
+		
+	}
+
+	@Override
+	public int decreaseStock(int productId, int quantity) {
+		return productDao.decreaseStock(productId, quantity);
+	}
 }

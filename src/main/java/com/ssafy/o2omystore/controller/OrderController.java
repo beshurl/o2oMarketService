@@ -46,4 +46,11 @@ public class OrderController {
     	
     	return orderService.getOrderDetail(orderId);
     }
+	
+	@Operation(summary = "{userId}에 해당하는 사용자의 전체 주문 내역을 리스트로 반환한다.")
+	@GetMapping("/user/{userId}")
+	public List<Order> getOrdersByUserId(@PathVariable String userId) {
+		
+		return orderService.getOrdersByUserId(userId);
+	}
 }

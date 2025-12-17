@@ -9,6 +9,10 @@
         <result property="userId" column="user_id"/>
         <result property="orderTime" column="order_time"/>
         <result property="totalPrice" column="total_price"/>
+        <collection property="orderDetails"
+        			ofType="com.ssafy.o2omystore.dto.OrderDetail"
+        			column="order_id"
+        			select="selectOrderDetailByOrderId"/>
     </resultMap>
 
     <insert id="insertOrder"
@@ -66,6 +70,12 @@
 			resultMap="orderDetailMap"
 			parameterType="Integer">
 	select * from order_detail where order_id = #{orderId}
+	</select>
+	
+	<select id="selectOrdersByUserId"
+	resultMap="orderMap">
+	select * from orders 
+	where user_id = #{userId}
 	</select>
 
 </mapper>

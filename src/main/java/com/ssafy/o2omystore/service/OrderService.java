@@ -12,4 +12,6 @@ public interface OrderService {
 	List<Order> getOrders();
 	
 	List<OrderDetail> getOrderDetail(int orderId);
+	
+	List<Order> getOrdersByUserId(String userId);
 }

@@ -20,4 +20,6 @@ public interface OrderDao {
 	
 	List<Order> selectOrdersByUserId(String userId);
 	
+	void deletelOrders(int orderId);
+	
 }

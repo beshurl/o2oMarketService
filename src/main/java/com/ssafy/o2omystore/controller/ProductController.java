@@ -54,7 +54,7 @@ public class ProductController {
 	    return productService.getProductDetail(productId);
 	}
 
-
+	@Operation(summary = "상품을 추가합니다.")
 	@PostMapping
 	public void createProduct() {
 	}

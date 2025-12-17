@@ -11,7 +11,7 @@ import com.ssafy.o2omystore.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Order API", description = "주문 생성, 조회 등 주문 관련 API")
+@Tag(name = "Order API", description = "주문 생성, 조회, 취소 등 주문 관련 API")
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -52,5 +52,12 @@ public class OrderController {
 	public List<Order> getOrdersByUserId(@PathVariable String userId) {
 		
 		return orderService.getOrdersByUserId(userId);
+	}
+	
+	@Operation(summary = "{orderId}에 해당하는 주문을 취소합니다.")
+	@DeleteMapping("/delete/{orderId}")
+	public void cancelOrders(@PathVariable int orderId) {
+		
+		orderService.cancelOrders(orderId);
 	}
 }

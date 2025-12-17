@@ -85,4 +85,9 @@ public class OrderServiceImpl implements OrderService {
 		return orderDao.selectOrdersByUserId(userId);
 	}
 
+	@Override
+	public void cancelOrders(int orderId) {
+		orderDao.deletelOrders(orderId);
+	}
+
 }

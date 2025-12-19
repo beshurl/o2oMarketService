@@ -8,10 +8,11 @@
 		<id property="userId" column="user_id" />
 		<result property="password" column="password" />
 		<result property="name" column="name" />
+		<result property="email" column="email"/>
 		<result property="address" column="address" />
 		<result property="phone" column="phone" />
 		<result property="gender" column="gender" />
-		<result property="age" column="age" />
+		<result property="birth" column="birth_date" />
 		<result property="point" column="point" />
 	</resultMap>
 
@@ -22,10 +23,11 @@
 		user_id,
 		password,
 		name,
+		email,
 		address,
 		phone,
 		gender,
-		age,
+		birth_date,
 		point
 		FROM user
 		WHERE user_id = #{value}
@@ -37,10 +39,11 @@
 		user_id,
 		password,
 		name,
+		email,
 		address,
 		phone,
 		gender,
-		age
+		birth_date
 		) VALUES (
 		#{userId},
 		#{password},
@@ -48,7 +51,7 @@
 		#{address},
 		#{phone},
 		#{gender},
-		#{age}
+		#{birth}
 		)
 	</insert>
 	
@@ -59,10 +62,11 @@
 		user_id,
 		password,
 		name,
+		email
 		address,
 		phone,
 		gender,
-		age,
+		birth_date,
 		point
 		FROM user
 		WHERE user_id = #{value}

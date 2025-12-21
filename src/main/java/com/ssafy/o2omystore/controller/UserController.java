@@ -2,7 +2,6 @@ package com.ssafy.o2omystore.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.ssafy.o2omystore.FCM.FCMService;
 import com.ssafy.o2omystore.dto.LoginRequest;
 import com.ssafy.o2omystore.dto.User;
 import com.ssafy.o2omystore.service.UserService;
@@ -16,12 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
 
     private final UserService userService;
-    private final FCMService fcmService;
 
-    public UserController(UserService userService, FCMService fcmService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.fcmService = fcmService;
-        
     }
 
     @Operation(summary = "회원 가입")
@@ -33,25 +29,8 @@ public class UserController {
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public User login(@RequestBody LoginRequest request) {
-    	
-    	
-        User user = userService.login(
-            request.getUserId(),
-            request.getPassword()
-        );
-        
-
-        // 로그인 성공 시 DB에서 FCM 토큰 조회
-        String fcmToken = fcmService.getTokenByUserId(user.getUserId());
-        
-        // 토큰 있으면 로그인 성공 FCM 알림 발송
-        if (fcmToken != null && !fcmToken.isBlank()) {
-            fcmService.sendLoginSuccessMessage(fcmToken);
-        }
-                
-        return user;    
-        
-        }
+        return userService.login(request.getUserId(), request.getPassword());
+    }
     
     @Operation(summary = "{userId}에 해당하는 아이디가 사용 가능하면 true 아니면 false를 반환한다. ")
     @GetMapping("/{userId}")

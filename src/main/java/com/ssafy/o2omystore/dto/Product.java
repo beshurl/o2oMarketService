@@ -9,6 +9,7 @@ public class Product {
     private String image;
     private String category;
     private int stock;
+    private String description;
 
     private Integer discountRate;
     private String discountType;
@@ -109,12 +110,24 @@ public class Product {
     public void setDiscountType(String discountType) {
         this.discountType = discountType;
     }
+    
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", name=" + name + ", price=" + price + ", finalPrice=" + finalPrice
-				+ ", image=" + image + ", category=" + category + ", stock=" + stock + ", discountRate=" + discountRate
-				+ ", discountType=" + discountType + "]";
+				+ ", image=" + image + ", category=" + category + ", stock=" + stock + ", description=" + description
+				+ ", discountRate=" + discountRate + ", discountType=" + discountType + "]";
 	}
+
+	
+
+	
 
 }

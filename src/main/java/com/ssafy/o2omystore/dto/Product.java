@@ -79,15 +79,15 @@ public class Product {
         this.image = image;
     }
 
-    public String getCategory() {
-        return category;
-    }
+	public String getCategory() {
+		return category;
+	}
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+	public void setCategory(String category) {
+		this.category = category;
+	}
 
-    public int getStock() {
+	public int getStock() {
 		return stock;
 	}
 

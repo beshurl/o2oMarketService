@@ -27,7 +27,7 @@ public class OrderController {
 	@Operation(summary = "사용자가 상품을 주문하면 주문과 주문 상세 내역을 생성한다.")
     @PostMapping
     public void createOrder(@RequestBody Order order) {
-    	
+		    	
     	orderService.createOrder(order);
     	
     }
@@ -60,4 +60,4 @@ public class OrderController {
 		
 		orderService.cancelOrders(orderId);
 	}
-}
+};

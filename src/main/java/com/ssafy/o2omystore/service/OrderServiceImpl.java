@@ -1,5 +1,6 @@
 package com.ssafy.o2omystore.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		order.setTotalPrice(totalPrice);
 		order.setStatus("주문 완료");
+		order.setOrderTime(LocalDateTime.now());
 		orderDao.insertOrder(order);
 		
 		// orderDetail에 orderId 넣기

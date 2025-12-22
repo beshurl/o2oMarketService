@@ -57,10 +57,25 @@ public class OrderServiceImpl implements OrderService {
 		// totalPrice 구하기
 		for (OrderDetail od : order.getOrderDetails()) {
 			
-			int price = productService.getPriceByProductId(od.getProductId());
-			
-			od.setPrice(price);
-			totalPrice += (od.getQuantity() * price);
+			Product product = productService.getProductById(od.getProductId());
+			int originalPrice = 0;
+			if (product != null && product.getPrice() != null) {
+				originalPrice = product.getPrice();
+			} else {
+				originalPrice = productService.getPriceByProductId(od.getProductId());
+			}
+
+			int finalPrice = originalPrice;
+			boolean discountApplied = false;
+			if (product != null && product.getFinalPrice() != null && product.getFinalPrice() > 0
+					&& product.getFinalPrice() < originalPrice) {
+				finalPrice = product.getFinalPrice();
+				discountApplied = true;
+			}
+
+			od.setPrice(finalPrice);
+			od.setDiscountApplied(discountApplied);
+			totalPrice += (od.getQuantity() * finalPrice);
 			
 		}
 		

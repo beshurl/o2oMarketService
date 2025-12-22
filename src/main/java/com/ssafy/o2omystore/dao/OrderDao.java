@@ -19,6 +19,8 @@ public interface OrderDao {
 	List<OrderDetail> selectOrderDetailByOrderId(int orderId);
 	
 	List<Order> selectOrdersByUserId(String userId);
+
+	Order selectOrderById(int orderId);
 	
 	void deletelOrders(int orderId);
 	

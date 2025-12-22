@@ -8,7 +8,20 @@
         <id property="orderId" column="order_id"/>
         <result property="userId" column="user_id"/>
         <result property="orderTime" column="order_time"/>
+        <result property="status" column="status"/>
+        <result property="recipientName" column="recipient_name"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="addressDetail" column="address_detail"/>
+        <result property="zipCode" column="zip_code"/>
+        <result property="productTotal" column="product_total"/>
+        <result property="deliveryFee" column="delivery_fee"/>
+        <result property="discount" column="discount"/>
         <result property="totalPrice" column="total_price"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="carrier" column="carrier"/>
+        <result property="trackingNumber" column="tracking_number"/>
+        <result property="estimatedDate" column="estimated_date"/>
         <collection property="orderDetails"
         			ofType="com.ssafy.o2omystore.dto.OrderDetail"
         			column="order_id"
@@ -23,12 +36,28 @@
 		user_id,
 		order_time,
 		status,
-		total_price
+		zip_code,
+		product_total,
+		delivery_fee,
+		discount,
+		total_price,
+		payment_method,
+		carrier,
+		tracking_number,
+		estimated_date
 		) VALUES (
 		#{userId},
 		NOW(),
 		#{status},
-		#{totalPrice}
+		#{zipCode},
+		#{productTotal},
+		#{deliveryFee},
+		#{discount},
+		#{totalPrice},
+		#{paymentMethod},
+		#{carrier},
+		#{trackingNumber},
+		#{estimatedDate}
 		)
 	</insert>
 	
@@ -55,7 +84,27 @@
 	</insert>
 	
 	<select id="selectAllOrder" resultMap="orderMap">
-	select * from orders;
+	select
+		o.order_id,
+		o.user_id,
+		o.order_time,
+		o.status,
+		u.name as recipient_name,
+		u.phone as phone,
+		u.address as address,
+		u.address_detail as address_detail,
+		o.zip_code,
+		o.product_total,
+		o.delivery_fee,
+		o.discount,
+		o.total_price,
+		o.payment_method,
+		o.carrier,
+		o.tracking_number,
+		o.estimated_date
+	from orders o
+	join user u on o.user_id = u.user_id
+	;
 	</select>
 	
 	<resultMap id="orderDetailMap"
@@ -63,6 +112,8 @@
         <id property="orderItemId" column="order_item_id"/>
         <result property="orderId" column="order_id"/>
         <result property="productId" column="product_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="price" column="price"/>
         <result property="discountApplied" column="discount_applied"/>
     </resultMap>
 	
@@ -74,8 +125,52 @@
 	
 	<select id="selectOrdersByUserId"
 	resultMap="orderMap">
-	select * from orders 
-	where user_id = #{userId}
+	select
+		o.order_id,
+		o.user_id,
+		o.order_time,
+		o.status,
+		u.name as recipient_name,
+		u.phone as phone,
+		u.address as address,
+		u.address_detail as address_detail,
+		o.zip_code,
+		o.product_total,
+		o.delivery_fee,
+		o.discount,
+		o.total_price,
+		o.payment_method,
+		o.carrier,
+		o.tracking_number,
+		o.estimated_date
+	from orders o
+	join user u on o.user_id = u.user_id
+	where o.user_id = #{userId}
+	</select>
+
+	<select id="selectOrderById"
+	resultMap="orderMap">
+	select
+		o.order_id,
+		o.user_id,
+		o.order_time,
+		o.status,
+		u.name as recipient_name,
+		u.phone as phone,
+		u.address as address,
+		u.address_detail as address_detail,
+		o.zip_code,
+		o.product_total,
+		o.delivery_fee,
+		o.discount,
+		o.total_price,
+		o.payment_method,
+		o.carrier,
+		o.tracking_number,
+		o.estimated_date
+	from orders o
+	join user u on o.user_id = u.user_id
+	where o.order_id = #{orderId}
 	</select>
 	
 	<delete id="deletelOrders">

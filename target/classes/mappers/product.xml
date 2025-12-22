@@ -28,6 +28,7 @@
 		p.image,
 		c.category_name,
 		p.count,
+		p.description,
 		d.rate,
 		d.type
 		FROM product p
@@ -132,6 +133,8 @@
 		END AS final_price,
 		p.image,
 		c.category_name,
+		p.count,
+		p.description,
 		d.rate,
 		d.type
 		FROM product p

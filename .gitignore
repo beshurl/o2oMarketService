@@ -1,5 +1,7 @@
 src/main/resources/firebase/o2omarketservice-firebase-adminsdk-fbsvc-4566d90104.json
 target/classes/firebase/o2omarketservice-firebase-adminsdk-fbsvc-4566d90104.json
-# firebase secret
-*.json
+# build
 target/
+
+# firebase secret
+**/firebase/*-adminsdk-*.json

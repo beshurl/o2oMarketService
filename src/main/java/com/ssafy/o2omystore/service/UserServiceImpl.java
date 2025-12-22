@@ -39,6 +39,15 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public User getUserById(String userId) {
+        User user = userDao.selectUserById(userId);
+        if (user != null) {
+            user.setPassword(null);
+        }
+        return user;
+    }
+
 	@Override
 	public boolean isUsed(String userId) {
 		

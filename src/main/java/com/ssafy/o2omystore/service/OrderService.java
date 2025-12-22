@@ -20,6 +20,10 @@ public interface OrderService {
 	List<OrderSummaryResponse> getOrderSummariesByUserId(String userId);
 
 	OrderDetailResponse getOrderDetailResponse(int orderId);
-	
+
 	void cancelOrders(int orderId);
+
+	int countOrdersByUserId(String userId);
+
+	int countInProgressOrdersByUserId(String userId);
 }

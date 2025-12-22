@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.PointHistoryDao">
+
+	<resultMap id="pointHistoryResultMap" type="com.ssafy.o2omystore.dto.PointHistory">
+		<id property="pointId" column="point_id" />
+		<result property="userId" column="user_id" />
+		<result property="earnedPoints" column="earned_points" />
+		<result property="usedPoints" column="used_points" />
+		<result property="expiredPoints" column="expired_points" />
+		<result property="earnMethod" column="earn_method" />
+		<result property="expireReason" column="expire_reason" />
+		<result property="validFrom" column="valid_from" />
+		<result property="validTo" column="valid_to" />
+		<result property="occurredAt" column="occurred_at" />
+	</resultMap>
+
+	<select id="selectPointHistoryByUserId" resultMap="pointHistoryResultMap" parameterType="string">
+		SELECT
+		point_id,
+		user_id,
+		earned_points,
+		used_points,
+		expired_points,
+		earn_method,
+		expire_reason,
+		valid_from,
+		valid_to,
+		occurred_at
+		FROM point_history
+		WHERE user_id = #{value}
+		ORDER BY occurred_at DESC, point_id DESC
+	</select>
+</mapper>

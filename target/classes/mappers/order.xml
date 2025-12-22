@@ -178,4 +178,17 @@
 	where order_id = #{orderId}
 	</delete>
 
+	<select id="countOrdersByUserId" parameterType="string" resultType="int">
+	select count(*)
+	from orders
+	where user_id = #{value}
+	</select>
+
+	<select id="countInProgressOrdersByUserId" parameterType="string" resultType="int">
+	select count(*)
+	from orders
+	where user_id = #{value}
+	and status in ('PENDING', 'PROCESSING', 'SHIPPING')
+	</select>
+
 </mapper>

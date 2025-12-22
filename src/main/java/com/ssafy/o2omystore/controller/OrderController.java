@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.ssafy.o2omystore.dto.CheckoutInfoResponse;
 import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.OrderDetailResponse;
 import com.ssafy.o2omystore.dto.OrderSummaryResponse;
+import com.ssafy.o2omystore.dto.User;
+import com.ssafy.o2omystore.service.CouponService;
 import com.ssafy.o2omystore.service.OrderService;
+import com.ssafy.o2omystore.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,10 +22,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class OrderController {
 	
 	private final OrderService orderService;
+	private final UserService userService;
+	private final CouponService couponService;
 
-	public OrderController(OrderService orderService) {
+	public OrderController(OrderService orderService, UserService userService, CouponService couponService) {
 		
 		this.orderService = orderService;
+		this.userService = userService;
+		this.couponService = couponService;
 		
 	}
 
@@ -64,6 +72,25 @@ public class OrderController {
 	@GetMapping("/{orderId}/detail")
 	public OrderDetailResponse getOrderDetailResponse(@PathVariable int orderId) {
 		return orderService.getOrderDetailResponse(orderId);
+	}
+
+	@Operation(summary = "{userId}에 해당하는 결제 화면용 사용자/쿠폰/포인트 정보를 반환한다.")
+	@GetMapping("/user/{userId}/checkout")
+	public CheckoutInfoResponse getCheckoutInfo(@PathVariable String userId) {
+		User user = userService.getUserById(userId);
+		if (user == null) {
+			return null;
+		}
+
+		CheckoutInfoResponse response = new CheckoutInfoResponse();
+		response.setUserId(user.getUserId());
+		response.setUserName(user.getName());
+		response.setAddress(user.getAddress());
+		response.setAddressDetail(user.getAddressDetail());
+		response.setPoint(user.getPoint());
+		response.setCoupons(couponService.getCouponsByUserId(userId));
+
+		return response;
 	}
 	
 	@Operation(summary = "{orderId}에 해당하는 주문을 취소합니다.")

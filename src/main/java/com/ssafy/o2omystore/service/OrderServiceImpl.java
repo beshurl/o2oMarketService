@@ -260,6 +260,16 @@ public class OrderServiceImpl implements OrderService {
 		orderDao.deletelOrders(orderId);
 	}
 
+	@Override
+	public int countOrdersByUserId(String userId) {
+		return orderDao.countOrdersByUserId(userId);
+	}
+
+	@Override
+	public int countInProgressOrdersByUserId(String userId) {
+		return orderDao.countInProgressOrdersByUserId(userId);
+	}
+
 	private String formatDate(LocalDateTime dateTime) {
 		if (dateTime == null) {
 			return null;

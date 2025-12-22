@@ -70,4 +70,10 @@
 		AND product_id = #{productId}
 	</select>
 
+	<select id="countCommentsByUserId" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM comment
+		WHERE user_id = #{value}
+	</select>
+
 </mapper>

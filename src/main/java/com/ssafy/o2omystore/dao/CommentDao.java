@@ -16,4 +16,6 @@ public interface CommentDao {
     int updateComment(Comment comment);
 
     int deleteComment(int commentId);
+
+    int countCommentsByUserId(String userId);
 }

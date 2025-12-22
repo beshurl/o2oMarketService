@@ -10,6 +10,7 @@
 		<result property="name" column="name" />
 		<result property="email" column="email"/>
 		<result property="address" column="address" />
+		<result property="addressDetail" column="address_detail" />
 		<result property="phone" column="phone" />
 		<result property="gender" column="gender" />
 		<result property="birth" column="birth_date" />
@@ -25,6 +26,7 @@
 		name,
 		email,
 		address,
+		address_detail,
 		phone,
 		gender,
 		birth_date,

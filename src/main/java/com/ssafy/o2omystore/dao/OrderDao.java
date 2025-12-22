@@ -23,5 +23,9 @@ public interface OrderDao {
 	Order selectOrderById(int orderId);
 	
 	void deletelOrders(int orderId);
+
+	int countOrdersByUserId(String userId);
+
+	int countInProgressOrdersByUserId(String userId);
 	
 }

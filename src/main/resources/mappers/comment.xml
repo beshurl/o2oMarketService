@@ -55,7 +55,7 @@
 		DELETE FROM comment
 		WHERE comment_id = #{value}
 	</delete>
-	
+
 	<select id="selectCommentByUserAndProduct"
 		parameterType="map"
 		resultMap="commentResultMap">
@@ -69,11 +69,9 @@
 		WHERE user_id = #{userId}
 		AND product_id = #{productId}
 	</select>
-
 	<select id="countCommentsByUserId" parameterType="string" resultType="int">
 		SELECT COUNT(*)
 		FROM comment
 		WHERE user_id = #{value}
 	</select>
-
 </mapper>

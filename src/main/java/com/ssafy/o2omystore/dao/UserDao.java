@@ -1,6 +1,7 @@
 package com.ssafy.o2omystore.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.o2omystore.dto.User;
 
@@ -15,5 +16,5 @@ public interface UserDao {
     
     int isUsed(String userId);
 
-    int updatePoint(String userId, int point);
+    int updatePoint(@Param("userId") String userId, @Param("point") int point);
 }

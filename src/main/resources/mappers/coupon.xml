@@ -15,7 +15,8 @@
 		<result property="createdAt" column="created_at" />
 	</resultMap>
 
-	<select id="selectCouponsByUserId" resultMap="couponResultMap" parameterType="string">
+	<select id="selectCouponsByUserId" resultMap="couponResultMap"
+		parameterType="string">
 		SELECT
 		coupon_id,
 		user_id,
@@ -31,7 +32,8 @@
 		ORDER BY created_at DESC
 	</select>
 
-	<select id="countAvailableCouponsByUserId" parameterType="string" resultType="int">
+	<select id="countAvailableCouponsByUserId" parameterType="string"
+		resultType="int">
 		SELECT COUNT(*)
 		FROM coupon
 		WHERE user_id = #{value}
@@ -39,7 +41,8 @@
 		AND NOW() BETWEEN valid_from AND valid_to
 	</select>
 
-	<select id="selectCouponById" parameterType="long" resultMap="couponResultMap">
+	<select id="selectCouponById" parameterType="long"
+		resultMap="couponResultMap">
 		SELECT
 		coupon_id,
 		user_id,

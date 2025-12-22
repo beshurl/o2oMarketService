@@ -10,34 +10,34 @@
 		<result property="finalPrice" column="final_price" />
 		<result property="image" column="image" />
 		<result property="category" column="category_name" />
-		<result property="stock" column="count"/>
+		<result property="stock" column="count" />
 		<result property="discountRate" column="rate" />
 		<result property="discountType" column="type" />
 	</resultMap>
 
 	<select id="selectProductsByCategory"
-            parameterType="int"
-            resultMap="productResultMap">
+		parameterType="int"
+		resultMap="productResultMap">
 
-        SELECT
-            p.product_id,
-            p.name,
-            p.price,
-            p.count,
-            p.description,
-            p.image,
-            p.is_discount,
-            p.is_deadline_sale,
-            p.deadline_at,
-            c.category_name
-        FROM product p
-        JOIN product_category pc
-            ON p.product_id = pc.product_id
-        JOIN category c
-        	ON pc.category_id = c.category_id
-        WHERE pc.category_id = #{categoryId}
+		SELECT
+		p.product_id,
+		p.name,
+		p.price,
+		p.count,
+		p.description,
+		p.image,
+		p.is_discount,
+		p.is_deadline_sale,
+		p.deadline_at,
+		c.category_name
+		FROM product p
+		JOIN product_category pc
+		ON p.product_id = pc.product_id
+		JOIN category c
+		ON pc.category_id = c.category_id
+		WHERE pc.category_id = #{categoryId}
 
-    </select>
+	</select>
 
 
 </mapper>

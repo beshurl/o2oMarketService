@@ -50,7 +50,14 @@ public class ChatServiceImpl implements ChatService {
 			context = buildLocationContext(message);
 		} else if (message.contains("주문") || message.contains("배송")) {
 			context = buildOrderContext(userId);
-		} else {
+		}else if (
+			    message.contains("추천") ||
+			    message.contains("저녁") ||
+			    message.contains("메뉴")
+			) {
+			    context = buildRecommendationContext();
+			}
+		else {
 			context = "Smart O2O Mart에 대한 일반 질문입니다.";
 		}
 
@@ -138,7 +145,7 @@ public class ChatServiceImpl implements ChatService {
 	private String callClaude(String context, String question) {
 
 		Map<String, Object> body = Map.of("model", "claude-sonnet-4-20250514", "max_tokens", 1024, "system", """
-				너는 Smart O2O Mart의 AI 쇼핑 도우미다.
+				너는 Smart O2O Mart의 AI 쇼핑 도우미 정준용이다.
 
 				규칙:
 				1. 반드시 제공된 마트 데이터(context)만 사용해 답변한다.
@@ -176,5 +183,25 @@ public class ChatServiceImpl implements ChatService {
 
 		return null;
 	}
+	private String buildRecommendationContext() {
+	    List<Product> products = productService.getAllProducts();
+
+	    if (products.isEmpty()) {
+	        return "현재 판매 중인 상품이 없습니다.";
+	    }
+
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("Smart O2O Mart에서 판매 중인 상품입니다:\n\n");
+
+	    for (Product p : products) {
+	        sb.append("- ").append(p.getName())
+	          .append(" (").append(p.getPrice()).append("원)\n");
+	    }
+
+	    sb.append("\n이 중에서 조합해서 식사를 추천해 주세요.");
+
+	    return sb.toString();
+	}
+
 
 }

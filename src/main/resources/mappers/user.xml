@@ -84,5 +84,11 @@
 	)
 	</select>
 
+	<update id="updatePoint">
+		UPDATE user
+		SET point = #{point}
+		WHERE user_id = #{userId}
+	</update>
+
 
 </mapper>

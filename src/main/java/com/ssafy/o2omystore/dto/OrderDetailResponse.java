@@ -16,6 +16,8 @@ public class OrderDetailResponse {
 	private int productTotal;
 	private int deliveryFee;
 	private int discount;
+	private int usedPoints;
+	private int couponDiscount;
 	private int totalDiscount;
 	private int totalAmount;
 	private String paymentMethod;
@@ -94,6 +96,18 @@ public class OrderDetailResponse {
 	}
 	public void setDiscount(int discount) {
 		this.discount = discount;
+	}
+	public int getUsedPoints() {
+		return usedPoints;
+	}
+	public void setUsedPoints(int usedPoints) {
+		this.usedPoints = usedPoints;
+	}
+	public int getCouponDiscount() {
+		return couponDiscount;
+	}
+	public void setCouponDiscount(int couponDiscount) {
+		this.couponDiscount = couponDiscount;
 	}
 	public int getTotalDiscount() {
 		return totalDiscount;

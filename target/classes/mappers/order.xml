@@ -17,6 +17,9 @@
         <result property="productTotal" column="product_total"/>
         <result property="deliveryFee" column="delivery_fee"/>
         <result property="discount" column="discount"/>
+        <result property="usedPoints" column="used_points"/>
+        <result property="couponDiscount" column="coupon_discount"/>
+        <result property="couponId" column="coupon_id"/>
         <result property="totalPrice" column="total_price"/>
         <result property="paymentMethod" column="payment_method"/>
         <result property="carrier" column="carrier"/>
@@ -40,6 +43,9 @@
 		product_total,
 		delivery_fee,
 		discount,
+		used_points,
+		coupon_discount,
+		coupon_id,
 		total_price,
 		payment_method,
 		carrier,
@@ -53,6 +59,9 @@
 		#{productTotal},
 		#{deliveryFee},
 		#{discount},
+		#{usedPoints},
+		#{couponDiscount},
+		#{couponId},
 		#{totalPrice},
 		#{paymentMethod},
 		#{carrier},
@@ -97,6 +106,9 @@
 		o.product_total,
 		o.delivery_fee,
 		o.discount,
+		o.used_points,
+		o.coupon_discount,
+		o.coupon_id,
 		o.total_price,
 		o.payment_method,
 		o.carrier,
@@ -104,6 +116,7 @@
 		o.estimated_date
 	from orders o
 	join user u on o.user_id = u.user_id
+	order by o.order_id desc
 	;
 	</select>
 	
@@ -138,6 +151,9 @@
 		o.product_total,
 		o.delivery_fee,
 		o.discount,
+		o.used_points,
+		o.coupon_discount,
+		o.coupon_id,
 		o.total_price,
 		o.payment_method,
 		o.carrier,
@@ -146,6 +162,7 @@
 	from orders o
 	join user u on o.user_id = u.user_id
 	where o.user_id = #{userId}
+	order by o.order_id desc
 	</select>
 
 	<select id="selectOrderById"
@@ -163,6 +180,9 @@
 		o.product_total,
 		o.delivery_fee,
 		o.discount,
+		o.used_points,
+		o.coupon_discount,
+		o.coupon_id,
 		o.total_price,
 		o.payment_method,
 		o.carrier,

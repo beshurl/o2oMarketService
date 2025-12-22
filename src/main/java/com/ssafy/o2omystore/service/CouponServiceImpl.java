@@ -25,4 +25,14 @@ public class CouponServiceImpl implements CouponService {
 	public int countAvailableCouponsByUserId(String userId) {
 		return couponDao.countAvailableCouponsByUserId(userId);
 	}
+
+	@Override
+	public Coupon getCouponById(long couponId) {
+		return couponDao.selectCouponById(couponId);
+	}
+
+	@Override
+	public void markCouponUsed(long couponId) {
+		couponDao.markCouponUsed(couponId);
+	}
 }

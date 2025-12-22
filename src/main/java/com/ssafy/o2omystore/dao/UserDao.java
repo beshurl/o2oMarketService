@@ -14,4 +14,6 @@ public interface UserDao {
     User selectUserForLogin(String userId);
     
     int isUsed(String userId);
+
+    int updatePoint(String userId, int point);
 }

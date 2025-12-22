@@ -48,6 +48,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public void updatePoint(String userId, int point) {
+        userDao.updatePoint(userId, point);
+    }
+
 	@Override
 	public boolean isUsed(String userId) {
 		

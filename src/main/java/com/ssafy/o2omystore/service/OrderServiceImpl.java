@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,24 +13,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.o2omystore.dao.OrderDao;
+import com.ssafy.o2omystore.dto.Coupon;
 import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.OrderDetail;
 import com.ssafy.o2omystore.dto.OrderDetailResponse;
 import com.ssafy.o2omystore.dto.OrderProductResponse;
 import com.ssafy.o2omystore.dto.OrderSummaryResponse;
+import com.ssafy.o2omystore.dto.PointHistory;
 import com.ssafy.o2omystore.dto.Product;
+import com.ssafy.o2omystore.dto.User;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 	
 	private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 	private static final DateTimeFormatter ORDER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	private static final int PURCHASE_POINT_RATE = 1;
 	private final OrderDao orderDao;
 	private final ProductService productService;
+	private final CouponService couponService;
+	private final UserService userService;
+	private final PointHistoryService pointHistoryService;
 	
-	public OrderServiceImpl(OrderDao orderDao, ProductService productService) {
+	public OrderServiceImpl(OrderDao orderDao, ProductService productService,
+			CouponService couponService, UserService userService,
+			PointHistoryService pointHistoryService) {
 		this.orderDao = orderDao;
 		this.productService = productService;
+		this.couponService = couponService;
+		this.userService = userService;
+		this.pointHistoryService = pointHistoryService;
 	}
 
 	@Transactional
@@ -79,10 +92,42 @@ public class OrderServiceImpl implements OrderService {
 			
 		}
 		
+		if (order.getOrderTime() == null) {
+			order.setOrderTime(LocalDateTime.now());
+		}
+		if (order.getEstimatedDate() == null) {
+			LocalDateTime baseTime = order.getOrderTime();
+			order.setEstimatedDate(baseTime.plusDays(2).withHour(18).withMinute(0).withSecond(0).withNano(0));
+		}
+		if (order.getCarrier() == null || order.getCarrier().isBlank()) {
+			order.setCarrier("준용배달업체");
+		}
+		if (order.getTrackingNumber() == null || order.getTrackingNumber().isBlank()) {
+			order.setTrackingNumber(generateTrackingNumber());
+		}
+
+		int couponDiscount = order.getCouponDiscount() == null ? 0 : order.getCouponDiscount();
+		Coupon coupon = null;
+		if (order.getCouponId() != null && couponDiscount <= 0) {
+			coupon = couponService.getCouponById(order.getCouponId());
+			validateCoupon(order, coupon);
+			couponDiscount = calculateCouponDiscount(coupon, totalPrice, order.getDeliveryFee());
+			order.setCouponDiscount(couponDiscount);
+		}
+
 		order.setProductTotal(totalPrice);
 		int deliveryFee = order.getDeliveryFee();
-		int discount = order.getDiscount();
-		order.setTotalPrice(totalPrice + deliveryFee - discount);
+		int usedPoints = order.getUsedPoints() == null ? 0 : order.getUsedPoints();
+		int discount = usedPoints + couponDiscount;
+		int providedTotalPrice = order.getTotalPrice();
+		if (providedTotalPrice > 0) {
+			int calculatedDiscount = totalPrice + deliveryFee - providedTotalPrice;
+			order.setDiscount(Math.max(calculatedDiscount, 0));
+		} else {
+			order.setDiscount(discount);
+			int calculatedTotal = totalPrice + deliveryFee - discount;
+			order.setTotalPrice(Math.max(calculatedTotal, 0));
+		}
 		if (order.getStatus() == null || order.getStatus().isBlank()) {
 			order.setStatus("PENDING");
 		}
@@ -101,8 +146,51 @@ public class OrderServiceImpl implements OrderService {
 //		order.setTotalPrice(totalPrice);
 		order.setStatus("주문 완료");
 
-		order.setOrderTime(LocalDateTime.now());
 		orderDao.insertOrder(order);
+
+		User user = userService.getUserById(order.getUserId());
+		if (user == null) {
+			throw new IllegalStateException("사용자 정보가 없습니다.");
+		}
+		usedPoints = order.getUsedPoints() == null ? 0 : order.getUsedPoints();
+		if (user.getPoint() < usedPoints) {
+			throw new IllegalStateException("보유 포인트가 부족합니다.");
+		}
+		int earnedPoints = calculateEarnedPoints(totalPrice);
+		int newPointBalance = user.getPoint() - usedPoints + earnedPoints;
+		userService.updatePoint(user.getUserId(), newPointBalance);
+
+		LocalDateTime now = order.getOrderTime();
+		if (usedPoints > 0) {
+			PointHistory usedHistory = new PointHistory();
+			usedHistory.setUserId(user.getUserId());
+			usedHistory.setEarnedPoints(0);
+			usedHistory.setUsedPoints(usedPoints);
+			usedHistory.setExpiredPoints(0);
+			usedHistory.setEarnMethod(null);
+			usedHistory.setExpireReason(null);
+			usedHistory.setValidFrom(null);
+			usedHistory.setValidTo(null);
+			usedHistory.setOccurredAt(now);
+			pointHistoryService.createPointHistory(usedHistory);
+		}
+		if (earnedPoints > 0) {
+			PointHistory earnedHistory = new PointHistory();
+			earnedHistory.setUserId(user.getUserId());
+			earnedHistory.setEarnedPoints(earnedPoints);
+			earnedHistory.setUsedPoints(0);
+			earnedHistory.setExpiredPoints(0);
+			earnedHistory.setEarnMethod("PURCHASE");
+			earnedHistory.setExpireReason(null);
+			earnedHistory.setValidFrom(now);
+			earnedHistory.setValidTo(now.plusYears(1));
+			earnedHistory.setOccurredAt(now);
+			pointHistoryService.createPointHistory(earnedHistory);
+		}
+
+		if (coupon != null || (order.getCouponId() != null && couponDiscount > 0)) {
+			couponService.markCouponUsed(order.getCouponId());
+		}
 		
 		// orderDetail에 orderId 넣기
 		for (OrderDetail od : order.getOrderDetails()) {
@@ -245,7 +333,11 @@ public class OrderServiceImpl implements OrderService {
 		response.setProductTotal(productTotal);
 		response.setDeliveryFee(order.getDeliveryFee());
 		response.setDiscount(order.getDiscount());
-		response.setTotalDiscount(order.getDiscount());
+		int usedPoints = order.getUsedPoints() == null ? 0 : order.getUsedPoints();
+		int couponDiscount = order.getCouponDiscount() == null ? 0 : order.getCouponDiscount();
+		response.setUsedPoints(usedPoints);
+		response.setCouponDiscount(couponDiscount);
+		response.setTotalDiscount(usedPoints + couponDiscount);
 		int totalAmount = order.getTotalPrice();
 		if (totalAmount == 0) {
 			totalAmount = productTotal + order.getDeliveryFee() - order.getDiscount();
@@ -275,6 +367,58 @@ public class OrderServiceImpl implements OrderService {
 			return null;
 		}
 		return dateTime.format(ORDER_DATE_FORMAT);
+	}
+
+	private String generateTrackingNumber() {
+		long value = ThreadLocalRandom.current().nextLong(1000000000L, 10000000000L);
+		return String.valueOf(value);
+	}
+
+	private void validateCoupon(Order order, Coupon coupon) {
+		if (coupon == null) {
+			throw new IllegalStateException("쿠폰 정보를 찾을 수 없습니다.");
+		}
+		if (!order.getUserId().equals(coupon.getUserId())) {
+			throw new IllegalStateException("쿠폰 사용자 정보가 일치하지 않습니다.");
+		}
+		if (coupon.isUsed()) {
+			throw new IllegalStateException("이미 사용된 쿠폰입니다.");
+		}
+		LocalDateTime now = order.getOrderTime();
+		if (coupon.getValidFrom() != null && now.isBefore(coupon.getValidFrom())) {
+			throw new IllegalStateException("쿠폰 사용 기간이 시작되지 않았습니다.");
+		}
+		if (coupon.getValidTo() != null && now.isAfter(coupon.getValidTo())) {
+			throw new IllegalStateException("쿠폰 사용 기간이 만료되었습니다.");
+		}
+	}
+
+	private int calculateCouponDiscount(Coupon coupon, int productTotal, int deliveryFee) {
+		if (coupon == null) {
+			return 0;
+		}
+		String type = coupon.getCouponType();
+		int value = coupon.getDiscountValue();
+		if ("AMOUNT".equals(type)) {
+			return Math.max(value, 0);
+		}
+		if ("PERCENT".equals(type)) {
+			if (value <= 0) {
+				return 0;
+			}
+			return productTotal * value / 100;
+		}
+		if ("SHIPPING".equals(type)) {
+			return Math.min(Math.max(value, 0), deliveryFee);
+		}
+		return 0;
+	}
+
+	private int calculateEarnedPoints(int productTotal) {
+		if (productTotal <= 0) {
+			return 0;
+		}
+		return productTotal * PURCHASE_POINT_RATE / 100;
 	}
 
 }

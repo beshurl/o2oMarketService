@@ -9,4 +9,6 @@ import com.ssafy.o2omystore.dto.PointHistory;
 @Mapper
 public interface PointHistoryDao {
 	List<PointHistory> selectPointHistoryByUserId(String userId);
+
+	int insertPointHistory(PointHistory pointHistory);
 }

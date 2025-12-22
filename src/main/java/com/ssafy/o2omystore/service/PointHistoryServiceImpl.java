@@ -20,4 +20,9 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 	public List<PointHistory> getPointHistoryByUserId(String userId) {
 		return pointHistoryDao.selectPointHistoryByUserId(userId);
 	}
+
+	@Override
+	public void createPointHistory(PointHistory pointHistory) {
+		pointHistoryDao.insertPointHistory(pointHistory);
+	}
 }

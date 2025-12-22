@@ -32,4 +32,28 @@
 		WHERE user_id = #{value}
 		ORDER BY occurred_at DESC, point_id DESC
 	</select>
+
+	<insert id="insertPointHistory" parameterType="com.ssafy.o2omystore.dto.PointHistory">
+		INSERT INTO point_history (
+		user_id,
+		earned_points,
+		used_points,
+		expired_points,
+		earn_method,
+		expire_reason,
+		valid_from,
+		valid_to,
+		occurred_at
+		) VALUES (
+		#{userId},
+		#{earnedPoints},
+		#{usedPoints},
+		#{expiredPoints},
+		#{earnMethod},
+		#{expireReason},
+		#{validFrom},
+		#{validTo},
+		#{occurredAt}
+		)
+	</insert>
 </mapper>

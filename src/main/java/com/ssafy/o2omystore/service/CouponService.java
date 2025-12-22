@@ -8,4 +8,8 @@ public interface CouponService {
 	List<Coupon> getCouponsByUserId(String userId);
 
 	int countAvailableCouponsByUserId(String userId);
+
+	Coupon getCouponById(long couponId);
+
+	void markCouponUsed(long couponId);
 }

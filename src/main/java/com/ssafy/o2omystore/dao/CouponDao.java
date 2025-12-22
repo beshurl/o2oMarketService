@@ -11,4 +11,8 @@ public interface CouponDao {
 	List<Coupon> selectCouponsByUserId(String userId);
 
 	int countAvailableCouponsByUserId(String userId);
+
+	Coupon selectCouponById(long couponId);
+
+	int markCouponUsed(long couponId);
 }

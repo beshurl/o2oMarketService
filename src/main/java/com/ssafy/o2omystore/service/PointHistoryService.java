@@ -6,4 +6,6 @@ import com.ssafy.o2omystore.dto.PointHistory;
 
 public interface PointHistoryService {
 	List<PointHistory> getPointHistoryByUserId(String userId);
+
+	void createPointHistory(PointHistory pointHistory);
 }

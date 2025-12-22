@@ -17,6 +17,9 @@ public class Order {
 	private int productTotal;
 	private int deliveryFee;
 	private int discount;
+	private Integer usedPoints;
+	private Integer couponDiscount;
+	private Long couponId;
 	private int totalPrice;
 	private String paymentMethod;
 	private String carrier;
@@ -95,6 +98,24 @@ public class Order {
 	}
 	public void setDiscount(int discount) {
 		this.discount = discount;
+	}
+	public Integer getUsedPoints() {
+		return usedPoints;
+	}
+	public void setUsedPoints(Integer usedPoints) {
+		this.usedPoints = usedPoints;
+	}
+	public Integer getCouponDiscount() {
+		return couponDiscount;
+	}
+	public void setCouponDiscount(Integer couponDiscount) {
+		this.couponDiscount = couponDiscount;
+	}
+	public Long getCouponId() {
+		return couponId;
+	}
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
 	}
 	public int getTotalPrice() {
 		return totalPrice;

@@ -44,19 +44,19 @@ public class OrderServiceImpl implements OrderService {
 			
 		}
 		
-		int totalPrice = 0;
-		
-		// totalPrice 구하기
-		for (OrderDetail od : order.getOrderDetails()) {
-			
-			int price = productService.getPriceByProductId(od.getProductId());
-			
-			od.setPrice(price);
-			totalPrice += (od.getQuantity() * price);
-			
-		}
-		
-		order.setTotalPrice(totalPrice);
+//		int totalPrice = 0;
+//		
+//		// totalPrice 구하기
+//		for (OrderDetail od : order.getOrderDetails()) {
+//			
+//			int price = productService.getPriceByProductId(od.getProductId());
+//			
+//			od.setPrice(price);
+//			totalPrice += (od.getQuantity() * price);
+//			
+//		}
+//		
+//		order.setTotalPrice(totalPrice);
 		order.setStatus("주문 완료");
 		order.setOrderTime(LocalDateTime.now());
 		orderDao.insertOrder(order);

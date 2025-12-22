@@ -206,18 +206,26 @@ public class OrderServiceImpl implements OrderService {
 				}
 
 				int originalPrice = detail.getPrice();
-				if (originalPrice == 0 && product != null && product.getPrice() != null) {
+				if (product != null && product.getPrice() != null && product.getPrice() > 0) {
 					originalPrice = product.getPrice();
+				} else if (originalPrice <= 0) {
+					originalPrice = detail.getPrice();
 				}
-				int discountedPrice = originalPrice;
-				if (product != null && product.getFinalPrice() != null && product.getFinalPrice() > 0) {
-					discountedPrice = product.getFinalPrice();
+
+				boolean discountApplied = detail.isDiscountApplied();
+				int discountedPrice = detail.getPrice();
+				if (discountedPrice <= 0) {
+					discountedPrice = originalPrice;
+					if (product != null && product.getFinalPrice() != null && product.getFinalPrice() > 0) {
+						discountedPrice = product.getFinalPrice();
+						discountApplied = discountedPrice < originalPrice;
+					}
+				} else if (!discountApplied) {
+					discountedPrice = originalPrice;
 				}
 
 				int discountRate = 0;
-				if (product != null && product.getDiscountRate() != null) {
-					discountRate = product.getDiscountRate();
-				} else if (originalPrice > 0 && discountedPrice > 0 && originalPrice != discountedPrice) {
+				if (originalPrice > 0 && discountedPrice > 0 && originalPrice != discountedPrice) {
 					discountRate = (originalPrice - discountedPrice) * 100 / originalPrice;
 				}
 

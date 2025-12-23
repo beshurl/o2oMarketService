@@ -35,4 +35,9 @@ public class NotificationServiceImpl implements NotificationService {
     public int countUnreadByUserId(String userId) {
         return notificationDao.countUnreadByUserId(userId);
     }
+
+    @Override
+    public void createNotification(Notification notification) {
+        notificationDao.insertNotification(notification);
+    }
 }

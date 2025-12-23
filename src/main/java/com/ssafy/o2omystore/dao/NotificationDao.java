@@ -16,4 +16,6 @@ public interface NotificationDao {
     int markDeleted(long notificationId);
 
     int countUnreadByUserId(String userId);
+
+    int insertNotification(com.ssafy.o2omystore.dto.Notification notification);
 }

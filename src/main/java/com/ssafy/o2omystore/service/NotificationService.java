@@ -13,4 +13,6 @@ public interface NotificationService {
     void markDeleted(long notificationId);
 
     int countUnreadByUserId(String userId);
+
+    void createNotification(com.ssafy.o2omystore.dto.Notification notification);
 }

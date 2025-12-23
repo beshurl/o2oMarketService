@@ -22,6 +22,7 @@ import com.ssafy.o2omystore.dto.OrderSummaryResponse;
 import com.ssafy.o2omystore.dto.PointHistory;
 import com.ssafy.o2omystore.dto.Product;
 import com.ssafy.o2omystore.dto.User;
+import com.ssafy.o2omystore.dto.Notification;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -34,15 +35,18 @@ public class OrderServiceImpl implements OrderService {
 	private final CouponService couponService;
 	private final UserService userService;
 	private final PointHistoryService pointHistoryService;
+	private final NotificationService notificationService;
 	
 	public OrderServiceImpl(OrderDao orderDao, ProductService productService,
 			CouponService couponService, UserService userService,
-			PointHistoryService pointHistoryService) {
+			PointHistoryService pointHistoryService,
+			NotificationService notificationService) {
 		this.orderDao = orderDao;
 		this.productService = productService;
 		this.couponService = couponService;
 		this.userService = userService;
 		this.pointHistoryService = pointHistoryService;
+		this.notificationService = notificationService;
 	}
 
 	@Transactional
@@ -149,6 +153,17 @@ public class OrderServiceImpl implements OrderService {
 		order.setStatus("주문 완료");
 
 		orderDao.insertOrder(order);
+
+		Notification notification = new Notification();
+		notification.setUserId(order.getUserId());
+		notification.setType("order");
+		notification.setTitle("Order completed");
+		notification.setMessage("Your order has been completed.");
+		notification.setRead(false);
+		notification.setDeleted(false);
+		notification.setTargetType("order");
+		notification.setTargetId((long) order.getOrderId());
+		notificationService.createNotification(notification);
 
 		User user = userService.getUserById(order.getUserId());
 		if (user == null) {

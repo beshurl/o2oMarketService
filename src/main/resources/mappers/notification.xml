@@ -64,4 +64,29 @@
 		AND is_read = 0
 		AND is_deleted = 0
 	</select>
+
+	<insert id="insertNotification"
+		parameterType="com.ssafy.o2omystore.dto.Notification"
+		useGeneratedKeys="true"
+		keyProperty="notificationId">
+		INSERT INTO notification (
+		user_id,
+		type,
+		title,
+		message,
+		is_read,
+		is_deleted,
+		target_type,
+		target_id
+		) VALUES (
+		#{userId},
+		#{type},
+		#{title},
+		#{message},
+		#{read},
+		#{deleted},
+		#{targetType},
+		#{targetId}
+		)
+	</insert>
 </mapper>

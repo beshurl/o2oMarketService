@@ -107,6 +107,8 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		int couponDiscount = order.getCouponDiscount() == null ? 0 : order.getCouponDiscount();
+		order.setCouponDiscount(couponDiscount);
+		
 		Coupon coupon = null;
 		if (order.getCouponId() != null && couponDiscount <= 0) {
 			coupon = couponService.getCouponById(order.getCouponId());

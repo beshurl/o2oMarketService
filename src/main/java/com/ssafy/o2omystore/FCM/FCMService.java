@@ -26,14 +26,14 @@ public class FCMService {
     }
 
 
-    public void sendLoginSuccessMessage(String fcmToken) {
+    public void sendMessage(String fcmToken, String title, String body) {
         
         Message message = Message.builder()
             .setToken(fcmToken)
             .setNotification(
                 Notification.builder()
-                    .setTitle("로그인 성공!")
-                    .setBody("환영합니다!")
+                    .setTitle(title)
+                    .setBody(body)
                     .build()
             )
             .build();

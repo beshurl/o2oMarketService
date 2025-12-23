@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.ssafy.o2omystore.FCM.FCMService;
 import com.ssafy.o2omystore.dto.CheckoutInfoResponse;
 import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.OrderDetailResponse;
@@ -25,12 +26,20 @@ public class OrderController {
 	private final OrderService orderService;
 	private final UserService userService;
 	private final CouponService couponService;
+	private final FCMService fcmService;
 
-	public OrderController(OrderService orderService, UserService userService, CouponService couponService) {
+	public OrderController(
+			OrderService orderService, 
+			UserService userService, 
+			CouponService couponService,
+			FCMService fcmService
+			) 
+	{
 		
 		this.orderService = orderService;
 		this.userService = userService;
 		this.couponService = couponService;
+		this.fcmService = fcmService;
 		
 	}
 
@@ -54,6 +63,14 @@ public class OrderController {
 		order.setOrderDetails(request.getOrderDetails());
 
 		orderService.createOrder(order);
+		
+		// 주문 성공 시 DB에서 FCM 토큰 조회
+        String fcmToken = fcmService.getTokenByUserId(request.getUserId());
+        
+        // 토큰 있으면 주문 성공 FCM 알림 발송
+        if (fcmToken != null && !fcmToken.isBlank()) {
+            fcmService.sendMessage(fcmToken, "주문이 완료되었습니다.", "배송이 시작되면 알려드릴게요.");
+        }
 	}
 
 	@Operation(summary = "모든 사용자의 주문 내역을 반환한다.")

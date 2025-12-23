@@ -45,7 +45,7 @@ public class UserController {
         
         // 토큰 있으면 로그인 성공 FCM 알림 발송
         if (fcmToken != null && !fcmToken.isBlank()) {
-            fcmService.sendLoginSuccessMessage(fcmToken);
+            fcmService.sendMessage(fcmToken, "로그인 성공!", "환영합니다");
         }
                 
         return user;        

@@ -82,4 +82,12 @@ public class ProductServiceImpl implements ProductService {
 	public int getPriceByProductId(int productId) {
 		return productDao.selectPriceByProductId(productId);
 	}
+
+	@Override
+	public void createProduct(Product product) {
+		productDao.insertProduct(product);
+		if (product.getCategory() != null) {
+			productDao.insertProductCategory(product.getProductId(), product.getCategory());
+		}
+	}
 }

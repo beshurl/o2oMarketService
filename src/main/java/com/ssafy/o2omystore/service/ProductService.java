@@ -23,5 +23,7 @@ public interface ProductService {
     Product getProductById(int productId);
 
     ProductDetail getProductDetail(int productId);
+
+    void createProduct(Product product);
 }
 

@@ -1,7 +1,10 @@
 package com.ssafy.o2omystore.chat.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.ssafy.o2omystore.chat.dto.ChatResponse;
 import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.Product;
 import com.ssafy.o2omystore.dto.ProductLocation;
@@ -40,9 +44,10 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public String ask(String userId, String message) {
+	public ChatResponse ask(String userId, String message) {
 
 		String context;
+		RecommendationResult recommendation = null;
 
 		if (message.contains("할인")) {
 			context = buildDiscountContext();
@@ -55,13 +60,18 @@ public class ChatServiceImpl implements ChatService {
 			    message.contains("저녁") ||
 			    message.contains("메뉴")
 			) {
-			    context = buildRecommendationContext();
+			    recommendation = buildRecommendationContext();
+			    context = recommendation.context;
 			}
 		else {
 			context = "Smart O2O Mart에 대한 일반 질문입니다.";
 		}
 
-		return callClaude(context, message);
+		String answer = callClaude(context, message);
+		if (recommendation != null) {
+			return new ChatResponse(answer, recommendation.products);
+		}
+		return new ChatResponse(answer);
 	}
 
 	// ==============================
@@ -183,25 +193,83 @@ public class ChatServiceImpl implements ChatService {
 
 		return null;
 	}
-	private String buildRecommendationContext() {
-	    List<Product> products = productService.getAllProducts();
+	private RecommendationResult buildRecommendationContext() {
+	    List<Product> deadlineProducts = safeList(productService.getDeadlineProducts());
+	    List<Product> discountProducts = safeList(productService.getDiscountProducts());
+	    List<Product> allProducts = safeList(productService.getAllProducts());
 
-	    if (products.isEmpty()) {
-	        return "현재 판매 중인 상품이 없습니다.";
+	    Set<Integer> included = new HashSet<>();
+	    List<Product> prioritizedDeadline = filterNewProducts(deadlineProducts, included);
+	    List<Product> prioritizedDiscount = filterNewProducts(discountProducts, included);
+	    List<Product> regularProducts = filterNewProducts(allProducts, included);
+
+	    List<Product> recommended = new ArrayList<>();
+	    recommended.addAll(prioritizedDeadline);
+	    recommended.addAll(prioritizedDiscount);
+	    recommended.addAll(regularProducts);
+
+	    if (recommended.isEmpty()) {
+	        return new RecommendationResult("No products are available right now.", recommended);
 	    }
 
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("Smart O2O Mart에서 판매 중인 상품입니다:\n\n");
+	    sb.append("Smart O2O Mart product recommendations.\n\n");
 
-	    for (Product p : products) {
-	        sb.append("- ").append(p.getName())
-	          .append(" (").append(p.getPrice()).append("원)\n");
-	    }
+	    appendProductSection(sb, "Deadline products", prioritizedDeadline);
+	    appendProductSection(sb, "Discount products", prioritizedDiscount);
+	    appendProductSection(sb, "Other products", regularProducts);
 
-	    sb.append("\n이 중에서 조합해서 식사를 추천해 주세요.");
+	    sb.append("\nPick anything you like, and I can help you choose.");
 
-	    return sb.toString();
+	    return new RecommendationResult(sb.toString(), recommended);
 	}
 
+	private List<Product> filterNewProducts(List<Product> products, Set<Integer> included) {
+	    List<Product> results = new ArrayList<>();
+	    for (Product product : products) {
+	        if (product == null || product.getProductId() == null) {
+	            continue;
+	        }
+	        if (included.add(product.getProductId())) {
+	            results.add(product);
+	        }
+	    }
+	    return results;
+	}
+
+	private List<Product> safeList(List<Product> products) {
+	    return products == null ? List.of() : products;
+	}
+
+	private void appendProductSection(StringBuilder sb, String title, List<Product> products) {
+	    if (products.isEmpty()) {
+	        return;
+	    }
+	    sb.append(title).append("\n");
+	    for (Product product : products) {
+	        sb.append("- ").append(product.getName());
+	        if (product.getDiscountRate() != null) {
+	            sb.append(" (discount ").append(product.getDiscountRate()).append("%)");
+	        }
+	        if (product.getPrice() != null) {
+	            sb.append(" price ").append(product.getPrice());
+	        }
+	        if (product.getFinalPrice() != null) {
+	            sb.append(" final ").append(product.getFinalPrice());
+	        }
+	        sb.append("\n");
+	    }
+	    sb.append("\n");
+	}
+
+	private static class RecommendationResult {
+	    private final String context;
+	    private final List<Product> products;
+
+	    private RecommendationResult(String context, List<Product> products) {
+	        this.context = context;
+	        this.products = products;
+	    }
+	}
 
 }

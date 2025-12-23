@@ -8,6 +8,7 @@ public class Coupon {
 	private String userId;
 	private String couponType;
 	private int discountValue;
+	private String description;
 	private LocalDateTime validFrom;
 	private LocalDateTime validTo;
 	private boolean used;
@@ -44,6 +45,14 @@ public class Coupon {
 
 	public void setDiscountValue(int discountValue) {
 		this.discountValue = discountValue;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public LocalDateTime getValidFrom() {

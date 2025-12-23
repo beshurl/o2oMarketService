@@ -89,6 +89,22 @@
 		SET point = #{point}
 		WHERE user_id = #{userId}
 	</update>
+	
+	<update id="updateUser"
+		parameterType="com.ssafy.o2omystore.dto.User">
+		UPDATE user
+		<set>
+			<if test="password != null">password = #{password},</if>
+			<if test="name != null">name = #{name},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="address != null">address = #{address},</if>
+			<if test="addressDetail != null">address_detail = #{addressDetail},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="gender != null">gender = #{gender},</if>
+			<if test="birth != null">birth_date = #{birth},</if>
+		</set>
+		WHERE user_id = #{userId}
+	</update>
 
 
 </mapper>

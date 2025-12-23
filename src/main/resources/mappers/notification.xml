@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.o2omystore.dao.NotificationDao">
+
+	<resultMap id="notificationResultMap" type="com.ssafy.o2omystore.dto.Notification">
+		<id property="notificationId" column="notification_id" />
+		<result property="userId" column="user_id" />
+		<result property="type" column="type" />
+		<result property="title" column="title" />
+		<result property="message" column="message" />
+		<result property="read" column="is_read" />
+		<result property="readAt" column="read_at" />
+		<result property="deleted" column="is_deleted" />
+		<result property="deletedAt" column="deleted_at" />
+		<result property="targetType" column="target_type" />
+		<result property="targetId" column="target_id" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+
+	<select id="selectNotificationsByUserId" resultMap="notificationResultMap"
+		parameterType="string">
+		SELECT
+		notification_id,
+		user_id,
+		type,
+		title,
+		message,
+		is_read,
+		read_at,
+		is_deleted,
+		deleted_at,
+		target_type,
+		target_id,
+		created_at
+		FROM notification
+		WHERE user_id = #{value}
+		AND is_deleted = 0
+		ORDER BY created_at DESC
+	</select>
+
+	<update id="markRead" parameterType="long">
+		UPDATE notification
+		SET
+		is_read = 1,
+		read_at = NOW()
+		WHERE notification_id = #{value}
+		AND is_deleted = 0
+	</update>
+
+	<update id="markDeleted" parameterType="long">
+		UPDATE notification
+		SET
+		is_deleted = 1,
+		deleted_at = NOW()
+		WHERE notification_id = #{value}
+		AND is_deleted = 0
+	</update>
+
+	<select id="countUnreadByUserId" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM notification
+		WHERE user_id = #{value}
+		AND is_read = 0
+		AND is_deleted = 0
+	</select>
+</mapper>

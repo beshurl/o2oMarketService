@@ -16,5 +16,7 @@ public interface UserDao {
     
     int isUsed(String userId);
 
+    int updateUser(User user);
+
     int updatePoint(@Param("userId") String userId, @Param("point") int point);
 }

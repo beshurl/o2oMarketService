@@ -1,5 +1,5 @@
 package com.ssafy.o2omystore.chat.service;
 
 public interface ChatService {
-    String ask(String userId, String message);
+    com.ssafy.o2omystore.chat.dto.ChatResponse ask(String userId, String message);
 }

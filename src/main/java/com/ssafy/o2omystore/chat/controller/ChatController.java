@@ -18,11 +18,11 @@ public class ChatController {
     @PostMapping
     public ChatResponse chat(@RequestBody ChatRequest request) {
 
-        String answer = chatService.ask(
+        ChatResponse response = chatService.ask(
                 request.getUserId(),
                 request.getMessage()
         );
 
-        return new ChatResponse(answer);
+        return response;
     }
 }

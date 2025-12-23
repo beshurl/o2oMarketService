@@ -8,6 +8,7 @@
 		<result property="userId" column="user_id" />
 		<result property="couponType" column="coupon_type" />
 		<result property="discountValue" column="discount_value" />
+		<result property="description" column="coupon_description" />
 		<result property="validFrom" column="valid_from" />
 		<result property="validTo" column="valid_to" />
 		<result property="used" column="is_used" />
@@ -22,6 +23,7 @@
 		user_id,
 		coupon_type,
 		discount_value,
+		coupon_description,
 		valid_from,
 		valid_to,
 		is_used,
@@ -48,6 +50,7 @@
 		user_id,
 		coupon_type,
 		discount_value,
+		coupon_description,
 		valid_from,
 		valid_to,
 		is_used,

@@ -51,6 +51,19 @@ public class UserController {
         return user;        
         }
     
+    @Operation(summary = "Get user info by userId")
+    @GetMapping("/users/{userId}")
+    public User getUser(@PathVariable String userId) {
+        return userService.getUserById(userId);
+    }
+
+    @Operation(summary = "Update user info by userId")
+    @PutMapping("/users/{userId}")
+    public void updateUser(@PathVariable String userId, @RequestBody User user) {
+        user.setUserId(userId);
+        userService.updateUser(user);
+    }
+
     @Operation(summary = "{userId}에 해당하는 아이디가 사용 가능하면 true 아니면 false를 반환한다. ")
     @GetMapping("/{userId}")
     public boolean isUsed(@PathVariable String userId) {

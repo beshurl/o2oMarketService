@@ -79,6 +79,21 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public int increaseStock(int productId, int quantity) {
+		return productDao.increaseStock(productId, quantity);
+	}
+
+	@Override
+	public int increaseSoldCount(int productId, int quantity) {
+		return productDao.increaseSoldCount(productId, quantity);
+	}
+
+	@Override
+	public int decreaseSoldCount(int productId, int quantity) {
+		return productDao.decreaseSoldCount(productId, quantity);
+	}
+
+	@Override
 	public int getPriceByProductId(int productId) {
 		return productDao.selectPriceByProductId(productId);
 	}
@@ -89,5 +104,10 @@ public class ProductServiceImpl implements ProductService {
 		if (product.getCategory() != null) {
 			productDao.insertProductCategory(product.getProductId(), product.getCategory());
 		}
+	}
+
+	@Override
+	public List<Product> getBestProducts(int limit) {
+		return productDao.selectBestProducts(limit);
 	}
 }

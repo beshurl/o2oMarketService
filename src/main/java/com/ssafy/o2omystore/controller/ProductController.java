@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ssafy.o2omystore.dto.BestProductResponse;
 import com.ssafy.o2omystore.dto.Product;
 import com.ssafy.o2omystore.dto.ProductDetail;
 import com.ssafy.o2omystore.dto.ProductLocation;
@@ -55,6 +56,31 @@ public class ProductController {
 			return productService.getDeadlineProducts();
 		}
 		return productService.getDeadlineProductsByCategory(category);
+	}
+
+	@GetMapping("/best")
+	public List<BestProductResponse> getBestProducts(@RequestParam(defaultValue = "10") int limit) {
+		List<Product> products = productService.getBestProducts(limit);
+		List<BestProductResponse> responses = new java.util.ArrayList<>();
+		int rank = 1;
+		for (Product product : products) {
+			BestProductResponse response = new BestProductResponse();
+			response.setId(product.getProductId() == null ? 0 : product.getProductId());
+			response.setRank(rank++);
+
+			int originalPrice = product.getPrice() == null ? 0 : product.getPrice();
+			int finalPrice = product.getFinalPrice() == null ? originalPrice : product.getFinalPrice();
+			int discount = product.getDiscountRate() == null ? 0 : product.getDiscountRate();
+
+			response.setName(product.getName());
+			response.setOriginalPrice(originalPrice);
+			response.setPrice(finalPrice);
+			response.setDiscount(discount);
+			response.setImage(product.getImage());
+			response.setSales(product.getSoldCount() == null ? 0 : product.getSoldCount());
+			responses.add(response);
+		}
+		return responses;
 	}
 
 	@Operation(summary = "{productId}에 해당하는 상품의 위치, 리뷰 등 상품 상세 내역을 반환한다.")

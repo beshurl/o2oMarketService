@@ -17,6 +17,12 @@ public interface ProductService {
     int getStockByProductId(int productId);
     
     int decreaseStock(int productId, int quantity);
+
+    int increaseStock(int productId, int quantity);
+
+    int increaseSoldCount(int productId, int quantity);
+
+    int decreaseSoldCount(int productId, int quantity);
     
     int getPriceByProductId(int productId);
 
@@ -25,5 +31,7 @@ public interface ProductService {
     ProductDetail getProductDetail(int productId);
 
     void createProduct(Product product);
+
+    List<Product> getBestProducts(int limit);
 }
 

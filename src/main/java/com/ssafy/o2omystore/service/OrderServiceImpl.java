@@ -365,8 +365,68 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public void cancelOrders(int orderId) {
+		Order order = orderDao.selectOrderById(orderId);
+		if (order == null) {
+			return;
+		}
+		if (isDeliveredStatus(order.getStatus())) {
+			throw new IllegalStateException("Delivered orders cannot be cancelled.");
+		}
+
+		if (order.getOrderDetails() != null) {
+			for (OrderDetail detail : order.getOrderDetails()) {
+				if (detail == null || detail.getQuantity() <= 0) {
+					continue;
+				}
+				productService.increaseStock(detail.getProductId(), detail.getQuantity());
+			}
+		}
+
 		orderDao.deletelOrders(orderId);
+	}
+
+	@Override
+	@Transactional
+	public void updateOrderStatus(int orderId, String status) {
+		if (status == null || status.isBlank()) {
+			return;
+		}
+
+		Order order = orderDao.selectOrderById(orderId);
+		if (order == null) {
+			throw new IllegalArgumentException("Order not found.");
+		}
+
+		String currentStatus = order.getStatus();
+		if (currentStatus != null && currentStatus.equalsIgnoreCase(status)) {
+			return;
+		}
+
+		if (isCancelledStatus(status)) {
+			if (isDeliveredStatus(currentStatus)) {
+				throw new IllegalStateException("Delivered orders cannot be cancelled.");
+			}
+			restoreStock(order);
+			orderDao.updateOrderStatus(orderId, status);
+			return;
+		}
+
+		if (isReturnedStatus(status)) {
+			if (!isDeliveredStatus(currentStatus)) {
+				throw new IllegalStateException("Only delivered orders can be returned.");
+			}
+			restoreStock(order);
+			decreaseSoldCount(order);
+			orderDao.updateOrderStatus(orderId, status);
+			return;
+		}
+
+		orderDao.updateOrderStatus(orderId, status);
+		if (isDeliveredStatus(status) && !isDeliveredStatus(currentStatus)) {
+			increaseSoldCount(order);
+		}
 	}
 
 	@Override
@@ -436,6 +496,54 @@ public class OrderServiceImpl implements OrderService {
 			return 0;
 		}
 		return productTotal * PURCHASE_POINT_RATE / 100;
+	}
+
+	private boolean isDeliveredStatus(String status) {
+		return status != null && "DELIVERED".equalsIgnoreCase(status);
+	}
+
+	private boolean isCancelledStatus(String status) {
+		return status != null && "CANCELLED".equalsIgnoreCase(status);
+	}
+
+	private boolean isReturnedStatus(String status) {
+		return status != null && "RETURNED".equalsIgnoreCase(status);
+	}
+
+	private void increaseSoldCount(Order order) {
+		if (order.getOrderDetails() == null) {
+			return;
+		}
+		for (OrderDetail detail : order.getOrderDetails()) {
+			if (detail == null || detail.getQuantity() <= 0) {
+				continue;
+			}
+			productService.increaseSoldCount(detail.getProductId(), detail.getQuantity());
+		}
+	}
+
+	private void decreaseSoldCount(Order order) {
+		if (order.getOrderDetails() == null) {
+			return;
+		}
+		for (OrderDetail detail : order.getOrderDetails()) {
+			if (detail == null || detail.getQuantity() <= 0) {
+				continue;
+			}
+			productService.decreaseSoldCount(detail.getProductId(), detail.getQuantity());
+		}
+	}
+
+	private void restoreStock(Order order) {
+		if (order.getOrderDetails() == null) {
+			return;
+		}
+		for (OrderDetail detail : order.getOrderDetails()) {
+			if (detail == null || detail.getQuantity() <= 0) {
+				continue;
+			}
+			productService.increaseStock(detail.getProductId(), detail.getQuantity());
+		}
 	}
 
 }

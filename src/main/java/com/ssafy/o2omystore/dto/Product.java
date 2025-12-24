@@ -10,6 +10,7 @@ public class Product {
     private String category;
     private int stock;
     private String description;
+    private Integer soldCount;
 
     private Integer discountRate;
     private String discountType;
@@ -119,11 +120,19 @@ public class Product {
 		this.description = description;
 	}
 
+	public Integer getSoldCount() {
+		return soldCount;
+	}
+
+	public void setSoldCount(Integer soldCount) {
+		this.soldCount = soldCount;
+	}
+
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", name=" + name + ", price=" + price + ", finalPrice=" + finalPrice
 				+ ", image=" + image + ", category=" + category + ", stock=" + stock + ", description=" + description
-				+ ", discountRate=" + discountRate + ", discountType=" + discountType + "]";
+				+ ", soldCount=" + soldCount + ", discountRate=" + discountRate + ", discountType=" + discountType + "]";
 	}
 
 	

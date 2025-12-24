@@ -15,11 +15,15 @@ public interface ProductDao {
     List<Product> selectDeadlineProductsByCategory(String category);
     int selectStockByProductId(int productId);
     int decreaseStock(int productId, int quantity);
+    int increaseStock(@Param("productId") int productId, @Param("quantity") int quantity);
+    int increaseSoldCount(@Param("productId") int productId, @Param("quantity") int quantity);
+    int decreaseSoldCount(@Param("productId") int productId, @Param("quantity") int quantity);
     int selectPriceByProductId(int productId);
     Product selectProductById(int productId);
     int insertProduct(Product product);
     int insertProductCategory(@Param("productId") int productId,
                               @Param("category") String category);
+    List<Product> selectBestProducts(@Param("limit") int limit);
 
 }
 

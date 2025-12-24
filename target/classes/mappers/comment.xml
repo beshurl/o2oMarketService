@@ -12,6 +12,17 @@
 		<result property="rating" column="rating" />
 	</resultMap>
 
+	<resultMap id="commentWithProductResultMap"
+		type="com.ssafy.o2omystore.dto.CommentWithProduct">
+		<id property="commentId" column="comment_id" />
+		<result property="userId" column="user_id" />
+		<result property="productId" column="product_id" />
+		<result property="content" column="content" />
+		<result property="rating" column="rating" />
+		<association property="product"
+			resultMap="com.ssafy.o2omystore.dao.ProductDao.productResultMap" />
+	</resultMap>
+
 	<select id="selectCommentsByProductId"
 		parameterType="int"
 		resultMap="commentResultMap">
@@ -73,5 +84,41 @@
 		SELECT COUNT(*)
 		FROM comment
 		WHERE user_id = #{value}
+	</select>
+
+	<select id="selectCommentsByUserIdWithProduct"
+		parameterType="string"
+		resultMap="commentWithProductResultMap">
+		SELECT
+		c.comment_id,
+		c.user_id,
+		c.product_id,
+		c.content,
+		c.rating,
+		p.product_id,
+		p.name,
+		p.price,
+		CASE
+		WHEN d.discount_id IS NOT NULL
+		THEN p.price * (100 - d.rate) / 100
+		ELSE p.price
+		END AS final_price,
+		p.image,
+		c2.category_name,
+		p.count,
+		p.sold_count,
+		p.description,
+		d.rate,
+		d.type
+		FROM comment c
+		JOIN product p ON c.product_id = p.product_id
+		JOIN product_category pc ON p.product_id = pc.product_id
+		JOIN category c2 ON pc.category_id = c2.category_id
+		LEFT JOIN discount d
+		ON p.product_id = d.product_id
+		AND d.is_active = 1
+		AND NOW() BETWEEN d.start_date AND d.end_date
+		WHERE c.user_id = #{value}
+		ORDER BY c.comment_id DESC
 	</select>
 </mapper>

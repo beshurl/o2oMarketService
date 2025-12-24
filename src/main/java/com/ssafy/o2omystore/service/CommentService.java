@@ -2,6 +2,7 @@ package com.ssafy.o2omystore.service;
 
 import java.util.List;
 import com.ssafy.o2omystore.dto.Comment;
+import com.ssafy.o2omystore.dto.CommentWithProduct;
 
 public interface CommentService {
 
@@ -14,4 +15,6 @@ public interface CommentService {
     void removeComment(int commentId);
 
     int countCommentsByUserId(String userId);
+
+    List<CommentWithProduct> getCommentsByUserIdWithProduct(String userId);
 }

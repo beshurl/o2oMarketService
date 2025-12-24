@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.o2omystore.dao.CommentDao;
 import com.ssafy.o2omystore.dto.Comment;
+import com.ssafy.o2omystore.dto.CommentWithProduct;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -47,5 +48,10 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public int countCommentsByUserId(String userId) {
 		return commentDao.countCommentsByUserId(userId);
+	}
+
+	@Override
+	public List<CommentWithProduct> getCommentsByUserIdWithProduct(String userId) {
+		return commentDao.selectCommentsByUserIdWithProduct(userId);
 	}
 }

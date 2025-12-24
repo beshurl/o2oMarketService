@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ssafy.o2omystore.dto.Comment;
+import com.ssafy.o2omystore.dto.CommentWithProduct;
 @Mapper
 public interface CommentDao {
 
@@ -18,4 +19,6 @@ public interface CommentDao {
     int deleteComment(int commentId);
 
     int countCommentsByUserId(String userId);
+
+    List<CommentWithProduct> selectCommentsByUserIdWithProduct(String userId);
 }

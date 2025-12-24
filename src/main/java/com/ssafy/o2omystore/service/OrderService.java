@@ -28,5 +28,4 @@ public interface OrderService {
 	int countOrdersByUserId(String userId);
 
 	int countInProgressOrdersByUserId(String userId);
-
 }

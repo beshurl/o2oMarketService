@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.o2omystore.dto.Comment;
+import com.ssafy.o2omystore.dto.CommentWithProduct;
 import com.ssafy.o2omystore.service.CommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,12 @@ public class CommentController {
     @PostMapping
     public void createComment(@RequestBody Comment comment) {
         commentService.createComment(comment);
+    }
+
+    @Operation(summary = "{userId}에 해당하는 사용자의 리뷰와 상품 정보를 반환합니다.")
+    @GetMapping("/user/{userId}")
+    public List<CommentWithProduct> getCommentsByUserId(@PathVariable String userId) {
+        return commentService.getCommentsByUserIdWithProduct(userId);
     }
 
     @Operation(summary = "{commentId}에 해당하는 리뷰를 수정합니다.")

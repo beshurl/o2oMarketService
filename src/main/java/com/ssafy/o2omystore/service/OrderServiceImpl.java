@@ -442,8 +442,6 @@ public class OrderServiceImpl implements OrderService {
 	public int countInProgressOrdersByUserId(String userId) {
 		return orderDao.countInProgressOrdersByUserId(userId);
 	}
-
-
 	private void sendStatusNotification(String userId, String status) {
 		if (userId == null || userId.isBlank()) {
 			return;

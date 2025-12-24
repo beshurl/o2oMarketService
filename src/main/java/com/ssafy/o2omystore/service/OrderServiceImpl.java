@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.o2omystore.FCM.FCMService;
 import com.ssafy.o2omystore.dao.OrderDao;
 import com.ssafy.o2omystore.dto.Coupon;
 import com.ssafy.o2omystore.dto.Order;
@@ -36,17 +37,20 @@ public class OrderServiceImpl implements OrderService {
 	private final UserService userService;
 	private final PointHistoryService pointHistoryService;
 	private final NotificationService notificationService;
+	private final FCMService fcmService;
 	
 	public OrderServiceImpl(OrderDao orderDao, ProductService productService,
 			CouponService couponService, UserService userService,
 			PointHistoryService pointHistoryService,
-			NotificationService notificationService) {
+			NotificationService notificationService,
+			FCMService fcmService) {
 		this.orderDao = orderDao;
 		this.productService = productService;
 		this.couponService = couponService;
 		this.userService = userService;
 		this.pointHistoryService = pointHistoryService;
 		this.notificationService = notificationService;
+		this.fcmService = fcmService;
 	}
 
 	@Transactional
@@ -377,6 +381,84 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public int countInProgressOrdersByUserId(String userId) {
 		return orderDao.countInProgressOrdersByUserId(userId);
+	}
+
+	@Override
+	@Transactional
+	public void updateOrderStatus(int orderId, String status) {
+		if (status == null || status.isBlank()) {
+			throw new IllegalArgumentException("status is required.");
+		}
+		Order order = orderDao.selectOrderById(orderId);
+		if (order == null) {
+			throw new IllegalStateException("order not found.");
+		}
+		int updated = orderDao.updateOrderStatus(orderId, status);
+		if (updated == 0) {
+			throw new IllegalStateException("order not found.");
+		}
+		sendStatusNotification(order.getUserId(), status);
+	}
+
+	private void sendStatusNotification(String userId, String status) {
+		if (userId == null || userId.isBlank()) {
+			return;
+		}
+		String fcmToken = fcmService.getTokenByUserId(userId);
+		if (fcmToken == null || fcmToken.isBlank()) {
+			return;
+		}
+
+		String normalized = status == null ? "" : status.trim();
+		String key = normalized.toUpperCase();
+		String title;
+		String body;
+
+		if ("주문 완료".equals(normalized)) {
+			title = "주문이 완료되었습니다.";
+			body = "배송이 시작되면 알려드릴게요.";
+		} else if ("배송 준비중".equals(normalized) || "상품 준비중".equals(normalized)) {
+			title = "주문을 준비중입니다.";
+			body = "상품을 준비하고 있어요.";
+		} else if ("배송 중".equals(normalized) || "배송 시작".equals(normalized)) {
+			title = "배송이 시작되었습니다.";
+			body = "배송이 시작되었어요.";
+		} else if ("배송 완료".equals(normalized)) {
+			title = "배송이 완료되었습니다.";
+			body = "구매해주셔서 감사합니다.";
+		} else if ("주문 취소".equals(normalized) || "취소".equals(normalized)) {
+			title = "주문이 취소되었습니다.";
+			body = "취소 요청이 처리되었어요.";
+		} else {
+			switch (key) {
+				case "PENDING":
+					title = "주문이 접수되었습니다.";
+					body = "주문 확인 후 처리할게요.";
+					break;
+				case "PROCESSING":
+					title = "주문을 준비중입니다.";
+					body = "상품을 준비하고 있어요.";
+					break;
+				case "SHIPPING":
+					title = "배송이 시작되었습니다.";
+					body = "배송이 시작되었어요.";
+					break;
+				case "DELIVERED":
+					title = "배송이 완료되었습니다.";
+					body = "구매해주셔서 감사합니다.";
+					break;
+				case "CANCELLED":
+					title = "주문이 취소되었습니다.";
+					body = "취소 요청이 처리되었어요.";
+					break;
+				default:
+					title = "주문 상태가 변경되었습니다.";
+					body = "현재 상태: " + normalized;
+					break;
+			}
+		}
+
+		fcmService.sendMessage(fcmToken, title, body);
 	}
 
 	private String formatDate(LocalDateTime dateTime) {

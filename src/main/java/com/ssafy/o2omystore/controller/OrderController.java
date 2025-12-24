@@ -9,6 +9,7 @@ import com.ssafy.o2omystore.dto.CheckoutInfoResponse;
 import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.OrderDetailResponse;
 import com.ssafy.o2omystore.dto.OrderPaymentRequest;
+import com.ssafy.o2omystore.dto.OrderStatusUpdateRequest;
 import com.ssafy.o2omystore.dto.OrderSummaryResponse;
 import com.ssafy.o2omystore.dto.User;
 import com.ssafy.o2omystore.service.CouponService;
@@ -130,5 +131,11 @@ public class OrderController {
 	public void cancelOrders(@PathVariable int orderId) {
 		
 		orderService.cancelOrders(orderId);
+	}
+
+	@Operation(summary = "관리자가 주문 상태를 변경한다.")
+	@PatchMapping("/{orderId}/status")
+	public void updateOrderStatus(@PathVariable int orderId, @RequestBody OrderStatusUpdateRequest request) {
+		orderService.updateOrderStatus(orderId, request.getStatus());
 	}
 };

@@ -26,4 +26,6 @@ public interface OrderService {
 	int countOrdersByUserId(String userId);
 
 	int countInProgressOrdersByUserId(String userId);
+
+	void updateOrderStatus(int orderId, String status);
 }

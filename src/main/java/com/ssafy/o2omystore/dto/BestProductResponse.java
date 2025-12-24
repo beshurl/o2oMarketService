@@ -3,6 +3,7 @@ package com.ssafy.o2omystore.dto;
 public class BestProductResponse {
 
     private int id;
+    private int productId;
     private int rank;
     private String name;
     private int price;
@@ -25,6 +26,14 @@ public class BestProductResponse {
 
     public void setRank(int rank) {
         this.rank = rank;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
     public String getName() {

@@ -165,9 +165,21 @@
 	count >= ${quantity}
 	</update>
 
+	<update id="increaseStock">
+	update product
+	set count = count + #{quantity}
+	where product_id = #{productId}
+	</update>
+
 	<update id="increaseSoldCount">
 	update product
 	set sold_count = sold_count + #{quantity}
+	where product_id = #{productId}
+	</update>
+
+	<update id="decreaseSoldCount">
+	update product
+	set sold_count = GREATEST(sold_count - #{quantity}, 0)
 	where product_id = #{productId}
 	</update>
 	

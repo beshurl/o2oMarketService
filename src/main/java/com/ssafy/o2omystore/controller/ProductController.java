@@ -65,7 +65,9 @@ public class ProductController {
 		int rank = 1;
 		for (Product product : products) {
 			BestProductResponse response = new BestProductResponse();
-			response.setId(product.getProductId() == null ? 0 : product.getProductId());
+			int productId = product.getProductId() == null ? 0 : product.getProductId();
+			response.setId(productId);
+			response.setProductId(productId);
 			response.setRank(rank++);
 
 			int originalPrice = product.getPrice() == null ? 0 : product.getPrice();

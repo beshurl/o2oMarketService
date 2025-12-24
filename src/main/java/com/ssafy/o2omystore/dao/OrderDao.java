@@ -31,6 +31,5 @@ public interface OrderDao {
 
 	int countInProgressOrdersByUserId(String userId);
 
-	int updateOrderStatus(@Param("orderId") int orderId, @Param("status") String status);
 	
 }

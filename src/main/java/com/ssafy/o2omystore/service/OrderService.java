@@ -8,13 +8,13 @@ import com.ssafy.o2omystore.dto.OrderDetail;
 import com.ssafy.o2omystore.dto.OrderSummaryResponse;
 
 public interface OrderService {
-	
+
 	void createOrder(Order order);
-	
+
 	List<Order> getOrders();
-	
+
 	List<OrderDetail> getOrderDetail(int orderId);
-	
+
 	List<Order> getOrdersByUserId(String userId);
 
 	List<OrderSummaryResponse> getOrderSummariesByUserId(String userId);
@@ -29,5 +29,4 @@ public interface OrderService {
 
 	int countInProgressOrdersByUserId(String userId);
 
-	void updateOrderStatus(int orderId, String status);
 }

@@ -443,22 +443,6 @@ public class OrderServiceImpl implements OrderService {
 		return orderDao.countInProgressOrdersByUserId(userId);
 	}
 
-	@Override
-	@Transactional
-	public void updateOrderStatus(int orderId, String status) {
-		if (status == null || status.isBlank()) {
-			throw new IllegalArgumentException("status is required.");
-		}
-		Order order = orderDao.selectOrderById(orderId);
-		if (order == null) {
-			throw new IllegalStateException("order not found.");
-		}
-		int updated = orderDao.updateOrderStatus(orderId, status);
-		if (updated == 0) {
-			throw new IllegalStateException("order not found.");
-		}
-		sendStatusNotification(order.getUserId(), status);
-	}
 
 	private void sendStatusNotification(String userId, String status) {
 		if (userId == null || userId.isBlank()) {

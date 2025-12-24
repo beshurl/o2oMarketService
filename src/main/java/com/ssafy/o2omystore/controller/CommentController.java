@@ -28,6 +28,12 @@ public class CommentController {
         return commentService.getCommentsByProductId(productId);
     }
 
+    @Operation(summary = "모든 리뷰를 조회합니다.")
+    @GetMapping
+    public List<Comment> getAllComments() {
+        return commentService.getAllComments();
+    }
+
     @Operation(summary = "리뷰를 작성합니다.")
     @PostMapping
     public void createComment(@RequestBody Comment comment) {

@@ -7,6 +7,7 @@ import com.ssafy.o2omystore.dto.CommentWithProduct;
 public interface CommentService {
 
     List<Comment> getCommentsByProductId(int productId);
+    List<Comment> getAllComments();
 
     void createComment(Comment comment);
 

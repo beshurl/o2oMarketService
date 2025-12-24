@@ -10,6 +10,7 @@ import com.ssafy.o2omystore.dto.CommentWithProduct;
 public interface CommentDao {
 
     List<Comment> selectCommentsByProductId(int productId);
+    List<Comment> selectAllComments();
     Comment selectCommentByUserAndProduct(String userId, int productId);
 
     int insertComment(Comment comment);

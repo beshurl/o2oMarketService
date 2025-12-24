@@ -23,6 +23,11 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	public List<Comment> getAllComments() {
+		return commentDao.selectAllComments();
+	}
+
+	@Override
 	public void createComment(Comment comment) {
 
 		Comment existing = commentDao.selectCommentByUserAndProduct(comment.getUserId(), comment.getProductId());

@@ -414,6 +414,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			restoreStock(order);
 			orderDao.updateOrderStatus(orderId, status);
+			notifyStatusChange(order, status);
 			return;
 		}
 
@@ -424,6 +425,7 @@ public class OrderServiceImpl implements OrderService {
 			restoreStock(order);
 			decreaseSoldCount(order);
 			orderDao.updateOrderStatus(orderId, status);
+			notifyStatusChange(order, status);
 			return;
 		}
 
@@ -431,6 +433,7 @@ public class OrderServiceImpl implements OrderService {
 		if (isDeliveredStatus(status) && !isDeliveredStatus(currentStatus)) {
 			increaseSoldCount(order);
 		}
+		notifyStatusChange(order, status);
 	}
 
 	@Override
@@ -443,65 +446,112 @@ public class OrderServiceImpl implements OrderService {
 		return orderDao.countInProgressOrdersByUserId(userId);
 	}
 
-	private void sendStatusNotification(String userId, String status) {
+	private void notifyStatusChange(Order order, String status) {
+		if (order == null) {
+			return;
+		}
+		String userId = order.getUserId();
 		if (userId == null || userId.isBlank()) {
 			return;
 		}
+
+		StatusNotificationContent content = buildStatusNotificationContent(status);
+
+		Notification notification = new Notification();
+		notification.setUserId(userId);
+		notification.setType("order");
+		notification.setTitle(content.title);
+		notification.setMessage(content.body);
+		notification.setRead(false);
+		notification.setDeleted(false);
+		notification.setTargetType("order");
+		notification.setTargetId((long) order.getOrderId());
+		notificationService.createNotification(notification);
+
 		String fcmToken = fcmService.getTokenByUserId(userId);
 		if (fcmToken == null || fcmToken.isBlank()) {
 			return;
 		}
+		fcmService.sendMessage(fcmToken, content.title, content.body);
+	}
 
+	private StatusNotificationContent buildStatusNotificationContent(String status) {
 		String normalized = status == null ? "" : status.trim();
-		String key = normalized.toUpperCase();
+		String key = resolveStatusKey(normalized);
 		String title;
 		String body;
 
-		if ("주문 완료".equals(normalized)) {
-			title = "주문이 완료되었습니다.";
-			body = "배송이 시작되면 알려드릴게요.";
-		} else if ("배송 준비중".equals(normalized) || "상품 준비중".equals(normalized)) {
-			title = "주문을 준비중입니다.";
-			body = "상품을 준비하고 있어요.";
-		} else if ("배송 중".equals(normalized) || "배송 시작".equals(normalized)) {
-			title = "배송이 시작되었습니다.";
-			body = "배송이 시작되었어요.";
-		} else if ("배송 완료".equals(normalized)) {
-			title = "배송이 완료되었습니다.";
-			body = "구매해주셔서 감사합니다.";
-		} else if ("주문 취소".equals(normalized) || "취소".equals(normalized)) {
-			title = "주문이 취소되었습니다.";
-			body = "취소 요청이 처리되었어요.";
-		} else {
-			switch (key) {
-				case "PENDING":
-					title = "주문이 접수되었습니다.";
-					body = "주문 확인 후 처리할게요.";
-					break;
-				case "PROCESSING":
-					title = "주문을 준비중입니다.";
-					body = "상품을 준비하고 있어요.";
-					break;
-				case "SHIPPING":
-					title = "배송이 시작되었습니다.";
-					body = "배송이 시작되었어요.";
-					break;
-				case "DELIVERED":
-					title = "배송이 완료되었습니다.";
-					body = "구매해주셔서 감사합니다.";
-					break;
-				case "CANCELLED":
-					title = "주문이 취소되었습니다.";
-					body = "취소 요청이 처리되었어요.";
-					break;
-				default:
-					title = "주문 상태가 변경되었습니다.";
-					body = "현재 상태: " + normalized;
-					break;
-			}
+		switch (key) {
+			case "PENDING":
+				title = "주문이 접수되었습니다.";
+				body = "주문 확인 후 처리할게요.";
+				break;
+			case "PROCESSING":
+				title = "상품 준비 중입니다.";
+				body = "상품을 준비하고 있어요.";
+				break;
+			case "SHIPPING":
+				title = "배송이 시작되었습니다.";
+				body = "배송이 시작되었어요.";
+				break;
+			case "DELIVERED":
+				title = "배송이 완료되었습니다.";
+				body = "구매해 주셔서 감사합니다.";
+				break;
+			case "CANCELLED":
+				title = "주문이 취소되었습니다.";
+				body = "취소 요청이 처리되었습니다.";
+				break;
+			case "RETURNED":
+				title = "주문이 반품되었습니다.";
+				body = "반품 요청이 처리되었습니다.";
+				break;
+			default:
+				title = "주문 상태가 변경되었습니다.";
+				body = normalized.isBlank() ? "주문 상태가 변경되었습니다." : "주문 상태: " + normalized;
+				break;
 		}
 
-		fcmService.sendMessage(fcmToken, title, body);
+		return new StatusNotificationContent(title, body);
+	}
+
+	private String resolveStatusKey(String normalized) {
+		if (normalized == null || normalized.isBlank()) {
+			return "";
+		}
+		switch (normalized) {
+			case "주문 완료":
+			case "주문 접수":
+				return "PENDING";
+			case "배송 준비중":
+			case "상품 준비중":
+				return "PROCESSING";
+			case "배송 중":
+			case "배송 시작":
+				return "SHIPPING";
+			case "배송 완료":
+				return "DELIVERED";
+			case "주문 취소":
+			case "취소":
+				return "CANCELLED";
+			case "반품":
+			case "반품 요청":
+			case "반품 완료":
+				return "RETURNED";
+			default:
+				return normalized.toUpperCase();
+		}
+		
+	}
+
+	private static class StatusNotificationContent {
+		private final String title;
+		private final String body;
+
+		private StatusNotificationContent(String title, String body) {
+			this.title = title;
+			this.body = body;
+		}
 	}
 
 	private String formatDate(LocalDateTime dateTime) {

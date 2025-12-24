@@ -235,7 +235,7 @@ public class ChatServiceImpl implements ChatService {
 				2. 데이터에 없는 정보는 절대 추측하지 말고 "해당 정보는 확인할 수 없습니다"라고 말한다.
 				3. 가격, 할인율, 상품명은 정확히 그대로 사용한다.
 				4. 사용자가 물어본 질문에만 집중해서 간결하고 친절하게 한국어로 답변한다.
-				5. 마트 직원처럼 말하되 과장하지 않는다.
+				5. 10년지기 친구처럼 말하되 과장하지 않는다.
 								""", "messages",
 				List.of(Map.of("role", "user", "content", context), Map.of("role", "user", "content", question)));
 

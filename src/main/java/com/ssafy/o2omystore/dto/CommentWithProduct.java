@@ -7,6 +7,7 @@ public class CommentWithProduct {
     private int productId;
     private String content;
     private float rating;
+    private Float productAverageRating;
     private Product product;
 
     public int getCommentId() {
@@ -47,6 +48,14 @@ public class CommentWithProduct {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public Float getProductAverageRating() {
+        return productAverageRating;
+    }
+
+    public void setProductAverageRating(Float productAverageRating) {
+        this.productAverageRating = productAverageRating;
     }
 
     public Product getProduct() {

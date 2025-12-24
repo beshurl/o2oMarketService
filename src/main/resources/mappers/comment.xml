@@ -19,6 +19,7 @@
 		<result property="productId" column="product_id" />
 		<result property="content" column="content" />
 		<result property="rating" column="rating" />
+		<result property="productAverageRating" column="product_avg_rating" />
 		<association property="product"
 			resultMap="com.ssafy.o2omystore.dao.ProductDao.productResultMap" />
 	</resultMap>
@@ -95,6 +96,9 @@
 		c.product_id,
 		c.content,
 		c.rating,
+		(SELECT AVG(c3.rating)
+		FROM comment c3
+		WHERE c3.product_id = c.product_id) AS product_avg_rating,
 		p.product_id,
 		p.name,
 		p.price,

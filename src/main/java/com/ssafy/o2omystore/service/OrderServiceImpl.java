@@ -445,16 +445,11 @@ public class OrderServiceImpl implements OrderService {
 	public int countInProgressOrdersByUserId(String userId) {
 		return orderDao.countInProgressOrdersByUserId(userId);
 	}
-<<<<<<< HEAD
-	private void sendStatusNotification(String userId, String status) {
-=======
-
 	private void notifyStatusChange(Order order, String status) {
 		if (order == null) {
 			return;
 		}
 		String userId = order.getUserId();
->>>>>>> bc01212f1111eb0ee4b431d0193c906dad66c6c9
 		if (userId == null || userId.isBlank()) {
 			return;
 		}
@@ -512,7 +507,9 @@ public class OrderServiceImpl implements OrderService {
 				break;
 			default:
 				title = "주문 상태가 변경되었습니다.";
-				body = normalized.isBlank() ? "주문 상태가 변경되었습니다." : "주문 상태: " + normalized;
+				body = normalized.isBlank()
+					? "주문 상태가 변경되었습니다."
+					: "주문 상태: " + normalized;
 				break;
 		}
 
@@ -545,7 +542,6 @@ public class OrderServiceImpl implements OrderService {
 			default:
 				return normalized.toUpperCase();
 		}
-		
 	}
 
 	private static class StatusNotificationContent {

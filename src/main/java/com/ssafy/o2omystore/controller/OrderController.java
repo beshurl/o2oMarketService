@@ -10,6 +10,7 @@ import com.ssafy.o2omystore.dto.Order;
 import com.ssafy.o2omystore.dto.OrderDetailResponse;
 import com.ssafy.o2omystore.dto.OrderPaymentRequest;
 import com.ssafy.o2omystore.dto.OrderStatusUpdateRequest;
+import com.ssafy.o2omystore.dto.OrderStatusRequest;
 import com.ssafy.o2omystore.dto.OrderSummaryResponse;
 import com.ssafy.o2omystore.dto.User;
 import com.ssafy.o2omystore.service.CouponService;
@@ -138,4 +139,15 @@ public class OrderController {
 	public void updateOrderStatus(@PathVariable int orderId, @RequestBody OrderStatusUpdateRequest request) {
 		orderService.updateOrderStatus(orderId, request.getStatus());
 	}
+
+	@PatchMapping("/{orderId}/cancel")
+	public void cancelOrderStatus(@PathVariable int orderId) {
+		orderService.updateOrderStatus(orderId, "CANCELLED");
+	}
+
+	@PatchMapping("/{orderId}/return")
+	public void returnOrderStatus(@PathVariable int orderId) {
+		orderService.updateOrderStatus(orderId, "RETURNED");
+	}
+	
 };

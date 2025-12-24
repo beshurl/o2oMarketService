@@ -23,6 +23,8 @@ public interface OrderService {
 
 	void cancelOrders(int orderId);
 
+	void updateOrderStatus(int orderId, String status);
+
 	int countOrdersByUserId(String userId);
 
 	int countInProgressOrdersByUserId(String userId);

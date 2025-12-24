@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ssafy.o2omystore.chat.dto.ChatResponse;
 import com.ssafy.o2omystore.dto.Order;
+import com.ssafy.o2omystore.dto.OrderDetail;
 import com.ssafy.o2omystore.dto.Product;
 import com.ssafy.o2omystore.dto.ProductLocation;
 import com.ssafy.o2omystore.service.OrderService;
@@ -54,7 +55,11 @@ public class ChatServiceImpl implements ChatService {
 		} else if (message.contains("위치")) {
 			context = buildLocationContext(message);
 		} else if (message.contains("주문") || message.contains("배송")) {
-			context = buildOrderContext(userId);
+			if (isOverallDeliveryStatusQuestion(message)) {
+				context = buildDeliverySummaryContext(userId);
+			} else {
+				context = buildOrderContext(userId);
+			}
 		}else if (
 			    message.contains("추천") ||
 			    message.contains("저녁") ||
@@ -150,6 +155,74 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	// ==============================
+
+	private String buildDeliverySummaryContext(String userId) {
+
+		List<Order> orders = orderService.getOrdersByUserId(userId);
+
+		if (orders == null || orders.isEmpty()) {
+			return "현재 주문 내역이 없습니다.";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("최근 주문 3건 배송 현황입니다.\n\n");
+
+		int index = 1;
+		for (Order order : orders) {
+			if (index > 3) {
+				break;
+			}
+
+			String productLabel = buildOrderProductLabel(order);
+			String status = (order.getStatus() == null || order.getStatus().isBlank()) ? "확인 필요" : order.getStatus();
+
+			sb.append(index).append(") 주문번호: ").append(order.getOrderId()).append("\n")
+				.append("  상품: ").append(productLabel).append("\n")
+				.append("  배송 상태: ").append(status).append("\n\n");
+
+			index++;
+		}
+
+		sb.append("원하시는 주문이 있으면 주문번호로 알려주세요.");
+		return sb.toString();
+	}
+
+	private String buildOrderProductLabel(Order order) {
+		List<OrderDetail> details = order.getOrderDetails();
+		if (details == null || details.isEmpty()) {
+			return "상품 정보 없음";
+		}
+
+		OrderDetail first = details.get(0);
+		for (OrderDetail detail : details) {
+			if (detail.getOrderItemId() < first.getOrderItemId()) {
+				first = detail;
+			}
+		}
+
+		Product product = productService.getProductById(first.getProductId());
+		String productName = product == null ? null : product.getName();
+		if (productName == null || productName.isBlank()) {
+			productName = "상품 정보 없음";
+		}
+
+		int additionalCount = Math.max(details.size() - 1, 0);
+		if (additionalCount > 0) {
+			return productName + " 외 " + additionalCount + "개";
+		}
+		return productName;
+	}
+
+	private boolean isOverallDeliveryStatusQuestion(String message) {
+		if (message == null) {
+			return false;
+		}
+		String normalized = message.replace(" ", "");
+		return normalized.contains("배송현황")
+			|| normalized.contains("배송상태")
+			|| normalized.contains("배송상황")
+			|| normalized.contains("전체배송");
+	}
 	// Claude Sonnet 4 호출
 	// ==============================
 	private String callClaude(String context, String question) {

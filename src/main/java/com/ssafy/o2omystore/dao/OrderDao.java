@@ -22,6 +22,8 @@ public interface OrderDao {
 	List<Order> selectOrdersByUserId(String userId);
 
 	Order selectOrderById(int orderId);
+
+	int updateOrderStatus(@Param("orderId") int orderId, @Param("status") String status);
 	
 	void deletelOrders(int orderId);
 

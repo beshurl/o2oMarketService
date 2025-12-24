@@ -2,6 +2,7 @@ package com.ssafy.o2omystore.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.o2omystore.dto.Product;
 @Mapper
@@ -16,6 +17,9 @@ public interface ProductDao {
     int decreaseStock(int productId, int quantity);
     int selectPriceByProductId(int productId);
     Product selectProductById(int productId);
+    int insertProduct(Product product);
+    int insertProductCategory(@Param("productId") int productId,
+                              @Param("category") String category);
 
 }
 

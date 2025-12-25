@@ -379,16 +379,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new IllegalStateException("Delivered orders cannot be cancelled.");
 		}
 
-		if (order.getOrderDetails() != null) {
-			for (OrderDetail detail : order.getOrderDetails()) {
-				if (detail == null || detail.getQuantity() <= 0) {
-					continue;
-				}
-				productService.increaseStock(detail.getProductId(), detail.getQuantity());
-			}
-		}
-
-		orderDao.deletelOrders(orderId);
+		updateOrderStatus(orderId, "CANCELLED");
 	}
 
 	@Override

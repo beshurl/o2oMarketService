@@ -3,6 +3,7 @@ package com.ssafy.o2omystore.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.o2omystore.dto.Coupon;
 
@@ -15,4 +16,9 @@ public interface CouponDao {
 	Coupon selectCouponById(long couponId);
 
 	int markCouponUsed(long couponId);
+
+	int insertCoupon(Coupon coupon);
+
+	int countActiveCouponByUserIdAndDescription(@Param("userId") String userId,
+		@Param("description") String description);
 }

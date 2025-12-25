@@ -68,4 +68,39 @@
 		WHERE coupon_id = #{value}
 		AND is_used = 0
 	</update>
+
+	<insert id="insertCoupon" parameterType="com.ssafy.o2omystore.dto.Coupon"
+		useGeneratedKeys="true" keyProperty="couponId">
+		INSERT INTO coupon (
+		user_id,
+		coupon_type,
+		coupon_description,
+		discount_value,
+		valid_from,
+		valid_to,
+		is_used,
+		used_at,
+		created_at
+		)
+		VALUES (
+		#{userId},
+		#{couponType},
+		#{description},
+		#{discountValue},
+		#{validFrom},
+		#{validTo},
+		#{used},
+		#{usedAt},
+		NOW()
+		)
+	</insert>
+
+	<select id="countActiveCouponByUserIdAndDescription" resultType="int">
+		SELECT COUNT(*)
+		FROM coupon
+		WHERE user_id = #{userId}
+		AND coupon_description = #{description}
+		AND is_used = 0
+		AND NOW() BETWEEN valid_from AND valid_to
+	</select>
 </mapper>

@@ -12,4 +12,6 @@ public interface CouponService {
 	Coupon getCouponById(long couponId);
 
 	void markCouponUsed(long couponId);
+
+	Coupon redeemCouponCode(String userId, String code);
 }

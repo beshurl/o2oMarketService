@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.o2omystore.dto.Coupon;
+import com.ssafy.o2omystore.dto.CouponRedeemRequest;
 import com.ssafy.o2omystore.dto.MyPageSummaryResponse;
 import com.ssafy.o2omystore.dto.PointHistory;
 import com.ssafy.o2omystore.dto.User;
@@ -64,6 +67,15 @@ public class MyPageController {
 	@GetMapping("/{userId}/coupons")
 	public List<Coupon> getMyPageCoupons(@PathVariable String userId) {
 		return couponService.getCouponsByUserId(userId);
+	}
+
+	@Operation(summary = "Redeem a coupon code and issue the welcome discount coupon.")
+	@PostMapping("/{userId}/coupons/redeem")
+	public Coupon redeemCoupon(@PathVariable String userId, @RequestBody CouponRedeemRequest request) {
+		if (request == null) {
+			throw new IllegalArgumentException("Invalid coupon code.");
+		}
+		return couponService.redeemCouponCode(userId, request.getCode());
 	}
 
 	@Operation(summary = "{userId}에 해당하는 포인트 내역 전체를 반환한다.")

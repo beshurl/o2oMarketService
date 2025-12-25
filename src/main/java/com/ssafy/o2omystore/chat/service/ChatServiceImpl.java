@@ -47,11 +47,18 @@ public class ChatServiceImpl implements ChatService {
 	@Override
 	public ChatResponse ask(String userId, String message) {
 
+		if (message != null && message.replace(" ", "").equals("매장"
+				+ "위치")) {
+			return new ChatResponse("매장 위치");
+		}
+
 		String context;
 		RecommendationResult recommendation = null;
+		List<Product> responseProducts = null;
 
 		if (message.contains("할인")) {
 			context = buildDiscountContext();
+			responseProducts = limitProducts(productService.getDiscountProducts(), 10);
 		} else if (message.contains("위치")) {
 			context = buildLocationContext(message);
 		} else if (message.contains("주문") || message.contains("배송")) {
@@ -74,7 +81,10 @@ public class ChatServiceImpl implements ChatService {
 
 		String answer = callClaude(context, message);
 		if (recommendation != null) {
-			return new ChatResponse(answer, recommendation.products);
+			return new ChatResponse(answer, limitProducts(recommendation.products, 10));
+		}
+		if (responseProducts != null && !responseProducts.isEmpty()) {
+			return new ChatResponse(answer, responseProducts);
 		}
 		return new ChatResponse(answer);
 	}
@@ -312,6 +322,14 @@ public class ChatServiceImpl implements ChatService {
 
 	private List<Product> safeList(List<Product> products) {
 	    return products == null ? List.of() : products;
+	}
+
+	private List<Product> limitProducts(List<Product> products, int limit) {
+	    if (products == null || products.isEmpty()) {
+	        return List.of();
+	    }
+	    int end = Math.min(limit, products.size());
+	    return new ArrayList<>(products.subList(0, end));
 	}
 
 	private void appendProductSection(StringBuilder sb, String title, List<Product> products) {

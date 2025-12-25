@@ -1,9 +1,13 @@
 package com.ssafy.o2omystore.FCM;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.Notification;
 
 @Service
@@ -43,6 +47,14 @@ public class FCMService {
         try {
             String response = FirebaseMessaging.getInstance().send(message);
             System.out.println(response);
+        } catch (FirebaseMessagingException e) {
+            if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
+                fcmTokenDao.deleteToken(fcmToken);
+                System.out.println("unregistered fcm token removed");
+            } else {
+                e.printStackTrace();
+                System.out.println("fcm 발송 실패!");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("fcm 발송 실패!");
@@ -57,6 +69,20 @@ public class FCMService {
     
     public String getTokenByUserId(String userId) {
         return fcmTokenDao.getTokenByUserId(userId);
+    }
+
+    public void sendMessageToAll(String title, String body) {
+        List<String> tokens = fcmTokenDao.getAllTokens();
+        if (tokens == null || tokens.isEmpty()) {
+            return;
+        }
+
+        for (String token : tokens) {
+            if (token == null || token.isBlank()) {
+                continue;
+            }
+            sendMessage(token, title, body);
+        }
     }
     
 }

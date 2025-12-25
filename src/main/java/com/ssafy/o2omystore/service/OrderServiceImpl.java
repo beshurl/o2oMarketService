@@ -107,12 +107,8 @@ public class OrderServiceImpl implements OrderService {
 			LocalDateTime baseTime = order.getOrderTime();
 			order.setEstimatedDate(baseTime.plusDays(2).withHour(18).withMinute(0).withSecond(0).withNano(0));
 		}
-		if (order.getCarrier() == null || order.getCarrier().isBlank()) {
-			order.setCarrier("준용배달업체");
-		}
-		if (order.getTrackingNumber() == null || order.getTrackingNumber().isBlank()) {
-			order.setTrackingNumber(generateTrackingNumber());
-		}
+		order.setCarrier("준용통운");
+		order.setTrackingNumber(generateTrackingNumber());
 
 		int couponDiscount = order.getCouponDiscount() == null ? 0 : order.getCouponDiscount();
 		order.setCouponDiscount(couponDiscount);

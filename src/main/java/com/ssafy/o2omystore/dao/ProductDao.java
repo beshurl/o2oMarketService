@@ -24,6 +24,10 @@ public interface ProductDao {
     int insertProductCategory(@Param("productId") int productId,
                               @Param("category") String category);
     List<Product> selectBestProducts(@Param("limit") int limit);
+    int deleteProductCategoryByProductId(int productId);
+    int deleteDiscountByProductId(int productId);
+    int deleteLocationByProductId(int productId);
+    int deleteProductById(int productId);
 
 }
 

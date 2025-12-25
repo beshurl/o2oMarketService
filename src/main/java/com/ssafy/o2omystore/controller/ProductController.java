@@ -97,6 +97,12 @@ public class ProductController {
 		productService.createProduct(product);
 	}
 
+	@Operation(summary = "{productId}에 해당하는 상품을 삭제합니다.")
+	@DeleteMapping("/delete/{productId}")
+	public void deleteProduct(@PathVariable int productId) {
+		productService.deleteProduct(productId);
+	}
+
 	@Operation(summary = "상품을 추가합니다. (이미지 파일 업로드 포함)")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public void createProductWithImage(

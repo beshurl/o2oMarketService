@@ -203,6 +203,26 @@
 		WHERE c.category_name = #{category}
 	</insert>
 
+	<delete id="deleteProductCategoryByProductId">
+		delete from product_category
+		where product_id = #{productId}
+	</delete>
+
+	<delete id="deleteDiscountByProductId">
+		delete from discount
+		where product_id = #{productId}
+	</delete>
+
+	<delete id="deleteLocationByProductId">
+		delete from location
+		where product_id = #{productId}
+	</delete>
+
+	<delete id="deleteProductById">
+		delete from product
+		where product_id = #{productId}
+	</delete>
+
 	<select id="selectBestProducts" resultMap="productResultMap">
 		SELECT
 		p.product_id,

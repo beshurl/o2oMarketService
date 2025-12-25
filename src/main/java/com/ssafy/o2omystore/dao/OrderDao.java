@@ -30,5 +30,7 @@ public interface OrderDao {
 	int countOrdersByUserId(String userId);
 
 	int countInProgressOrdersByUserId(String userId);
+
+	int countOrderDetailsByProductId(int productId);
 	
 }

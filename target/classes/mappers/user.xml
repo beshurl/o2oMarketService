@@ -35,6 +35,21 @@
 		WHERE user_id = #{value}
 	</select>
 
+	<select id="selectAllUsers" resultMap="userResultMap">
+		SELECT
+		user_id,
+		name,
+		email,
+		address,
+		address_detail,
+		phone,
+		gender,
+		birth_date,
+		point
+		FROM user
+		ORDER BY user_id
+	</select>
+
 	<insert id="insertUser"
 		parameterType="com.ssafy.o2omystore.dto.User">
 		INSERT INTO user (
@@ -106,5 +121,29 @@
 		WHERE user_id = #{userId}
 	</update>
 
+	<delete id="deletePointHistoryByUserId">
+		delete from point_history
+		where user_id = #{userId}
+	</delete>
+
+	<delete id="deletePointsByUserId">
+		delete from point
+		where user_id = #{userId}
+	</delete>
+
+	<delete id="deleteCouponsByUserId">
+		delete from coupon
+		where user_id = #{userId}
+	</delete>
+
+	<delete id="deleteUserFcmTokenByUserId">
+		delete from user_fcm_token
+		where user_id = #{userId}
+	</delete>
+
+	<delete id="deleteUserById">
+		delete from user
+		where user_id = #{userId}
+	</delete>
 
 </mapper>

@@ -6,6 +6,7 @@ import com.ssafy.o2omystore.FCM.FCMService;
 import com.ssafy.o2omystore.dto.LoginRequest;
 import com.ssafy.o2omystore.dto.User;
 import com.ssafy.o2omystore.service.UserService;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,11 +58,23 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
+    @Operation(summary = "모든 사용자의 정보를 반환한다. (관리자용)")
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
     @Operation(summary = "Update user info by userId")
     @PutMapping("/users/{userId}")
     public void updateUser(@PathVariable String userId, @RequestBody User user) {
         user.setUserId(userId);
         userService.updateUser(user);
+    }
+
+    @Operation(summary = "{userId}에 해당하는 사용자를 삭제합니다.")
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable String userId) {
+        userService.deleteUser(userId);
     }
 
     @Operation(summary = "{userId}에 해당하는 아이디가 사용 가능하면 true 아니면 false를 반환한다. ")

@@ -1,17 +1,22 @@
 package com.ssafy.o2omystore.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.o2omystore.dao.OrderDao;
 import com.ssafy.o2omystore.dao.UserDao;
 import com.ssafy.o2omystore.dto.User;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final OrderDao orderDao;
 
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, OrderDao orderDao) {
         this.userDao = userDao;
+        this.orderDao = orderDao;
     }
 
     @Override
@@ -56,6 +61,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePoint(String userId, int point) {
         userDao.updatePoint(userId, point);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(String userId) {
+        orderDao.clearCouponByUserId(userId);
+        userDao.deletePointHistoryByUserId(userId);
+        userDao.deletePointsByUserId(userId);
+        userDao.deleteCouponsByUserId(userId);
+        userDao.deleteUserFcmTokenByUserId(userId);
+        userDao.deleteUserById(userId);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> users = userDao.selectAllUsers();
+        if (users == null) {
+            return List.of();
+        }
+        for (User user : users) {
+            if (user != null) {
+                user.setPassword(null);
+            }
+        }
+        return users;
     }
 
 	@Override

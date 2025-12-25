@@ -208,4 +208,9 @@
 		from order_detail
 		where product_id = #{productId}
 	</select>
+	<update id="clearCouponByUserId">
+		update orders
+		set coupon_id = null
+		where user_id = #{userId}
+	</update>
 </mapper>

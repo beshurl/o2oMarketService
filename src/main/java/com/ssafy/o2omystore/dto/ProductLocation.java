@@ -20,15 +20,31 @@ public class ProductLocation {
         return productId;
     }
 
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
     public String getZone() {
         return zone;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
     }
 
     public int getXCode() {
         return xCode;
     }
 
+    public void setXCode(int xCode) {
+        this.xCode = xCode;
+    }
+
     public int getYCode() {
         return yCode;
+    }
+
+    public void setYCode(int yCode) {
+        this.yCode = yCode;
     }
 }

@@ -46,7 +46,8 @@ public class UserController {
         
         // 토큰 있으면 로그인 성공 FCM 알림 발송
         if (fcmToken != null && !fcmToken.isBlank()) {
-            fcmService.sendMessage(fcmToken, "로그인 성공!", "환영합니다");
+            fcmService.sendMessage(fcmToken, "속보", "현재 마감세일중인 상품이 있습니다."
+            		+ "");
         }
                 
         return user;        

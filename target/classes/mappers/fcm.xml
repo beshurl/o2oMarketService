@@ -17,4 +17,14 @@
 		WHERE user_id = #{userId}
 	</select>
 
+	<select id="getAllTokens" resultType="string">
+		SELECT fcm_token
+		FROM user_fcm_token
+	</select>
+
+	<delete id="deleteToken">
+		DELETE FROM user_fcm_token
+		WHERE fcm_token = #{fcmToken}
+	</delete>
+
 </mapper>

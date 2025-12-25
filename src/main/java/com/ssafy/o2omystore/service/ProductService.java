@@ -32,6 +32,8 @@ public interface ProductService {
 
     void createProduct(Product product);
 
+    void deleteProduct(int productId);
+
     List<Product> getBestProducts(int limit);
 }
 

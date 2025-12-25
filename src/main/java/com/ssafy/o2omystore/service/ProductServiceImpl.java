@@ -3,9 +3,10 @@ package com.ssafy.o2omystore.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.o2omystore.dao.OrderDao;
 import com.ssafy.o2omystore.dao.ProductDao;
-import com.ssafy.o2omystore.dao.ProductLocationDao;
 import com.ssafy.o2omystore.dto.Comment;
 import com.ssafy.o2omystore.dto.Product;
 import com.ssafy.o2omystore.dto.ProductDetail;
@@ -17,11 +18,14 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductDao productDao;
 	private final ProductLocationService productLocationService;
 	private final CommentService commentService;
+	private final OrderDao orderDao;
 
-	public ProductServiceImpl(ProductDao productDao, ProductLocationService productLocationService,CommentService commetService) {
+	public ProductServiceImpl(ProductDao productDao, ProductLocationService productLocationService,
+			CommentService commetService, OrderDao orderDao) {
 		this.productDao = productDao;
 		this.productLocationService = productLocationService;
 		this.commentService = commetService;
+		this.orderDao = orderDao;
 	}
 
 	@Override
@@ -104,6 +108,19 @@ public class ProductServiceImpl implements ProductService {
 		if (product.getCategory() != null) {
 			productDao.insertProductCategory(product.getProductId(), product.getCategory());
 		}
+	}
+
+	@Override
+	@Transactional
+	public void deleteProduct(int productId) {
+		int orderCount = orderDao.countOrderDetailsByProductId(productId);
+		if (orderCount > 0) {
+			throw new IllegalStateException("상품 삭제 전에 관련 주문 내역을 처리해야 합니다.");
+		}
+		productDao.deleteProductCategoryByProductId(productId);
+		productDao.deleteDiscountByProductId(productId);
+		productDao.deleteLocationByProductId(productId);
+		productDao.deleteProductById(productId);
 	}
 
 	@Override

@@ -203,4 +203,9 @@
 		where user_id = #{value}
 		and status in ('PENDING', 'PROCESSING', 'SHIPPING')
 	</select>
+	<select id="countOrderDetailsByProductId" parameterType="int" resultType="int">
+		select count(*)
+		from order_detail
+		where product_id = #{productId}
+	</select>
 </mapper>

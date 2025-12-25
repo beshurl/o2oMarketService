@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,24 +40,24 @@ public class ProductController {
 	@Operation(summary = "전체 상품의 목록을 조회한다.")
 	@GetMapping
 	public List<Product> getAllProducts() {
-		return productService.getAllProducts();
+		return shuffled(productService.getAllProducts());
 	}
 
 	@GetMapping("/discount")
 	public List<Product> getDiscountProducts(@RequestParam(required = false) String category) {
 
 		if (category == null) {
-			return productService.getDiscountProducts();
+			return shuffled(productService.getDiscountProducts());
 		}
-		return productService.getDiscountProductsByCategory(category);
+		return shuffled(productService.getDiscountProductsByCategory(category));
 	}
 
 	@GetMapping("/deadline")
 	public List<Product> getDeadlineProducts(@RequestParam(required = false) String category) {
 		if (category == null) {
-			return productService.getDeadlineProducts();
+			return shuffled(productService.getDeadlineProducts());
 		}
-		return productService.getDeadlineProductsByCategory(category);
+		return shuffled(productService.getDeadlineProductsByCategory(category));
 	}
 
 	@GetMapping("/best")
@@ -179,6 +181,15 @@ public class ProductController {
 	@GetMapping("/test/location/{productId}")
 	public ProductLocation testLocation(@PathVariable int productId) {
 		return productLocationService.getLocationByProductId(productId);
+	}
+
+	private <T> List<T> shuffled(List<T> items) {
+		if (items == null || items.size() < 2) {
+			return items;
+		}
+		List<T> copy = new ArrayList<>(items);
+		Collections.shuffle(copy);
+		return copy;
 	}
 
 }
